@@ -25,11 +25,11 @@ def find_next_node(node, d):
             if new_node := node_by_pos(x,y):
                 return new_node
     if d in "lr":
-        while y>=0 and y<mapsize[1]:
+        while x>=0 and x<mapsize[0]:  # Changed to use x coordinates
             if d == "l":
-                y-=1
+                x-=1  # Modified x instead of y
             else:
-                y+=1
+                x+=1  # Modified x instead of y
             if new_node := node_by_pos(x,y):
                 return new_node
     return False
@@ -80,6 +80,8 @@ for n in range(len(nodes)):
     #print("Pre-edit: ",n,nodes[n])
     node=nodes[n]
     for direction in "udlr":
+        print(node)
+        print(direction)
         if node.edges[direction] == None:
             next_node = find_next_node(node,direction)
             #print(next_node)
