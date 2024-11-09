@@ -128,6 +128,7 @@ def path(start):
         current_node = came_from[current_node]
     
     path_list.reverse()  # Reverse to get path from start to target
+    path_list.pop(0)
     return path_list
 
 
