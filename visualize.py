@@ -43,6 +43,8 @@ road_width = 3
 carHeight = 10
 carWidth = 5
 
+
+time_elapsed_since_last_action = 0
 while running:
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
@@ -194,5 +196,11 @@ while running:
     # dt is delta time in seconds since last frame, used for framerate-
     # independent physics.
     dt = clock.tick(60) / 1000
+
+    time_elapsed_since_last_action += dt
+    if time_elapsed_since_last_action > 5:
+        for n in nodes:
+            n.lightud = not n.lightud
+        time_elapsed_since_last_action = 0
 
 pygame.quit()
