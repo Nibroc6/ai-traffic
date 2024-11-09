@@ -6,6 +6,8 @@ nodes = []
 cars = []
 
 mapsize = [10,10]
+car_breaking_range = (0.1,0.3)
+traffic_light_range = .4
 inverse_directions = {"u":"d","d":"u","l":"r","r":"l"}
 
 def node_by_pos(x,y):
@@ -64,34 +66,83 @@ class node():
     def __str__(self):
         return str(self.edges)+"\n"+str(self.lightud)+"\n"+str(self.cars_in_intersection)+"\n"+str(f"({self.x},{self.y})")
 
-    def __str__(self):
-        return str(self.edges)+"\n"+str(self.lightud)+"\n"+str(self.cars_in_intersection)+"\n"+str(f"({self.x},{self.y})")
 
 class car():
     speed = 0
     position = 0
     ticked = False
+    accel = .005#add random later
+    brake_accel = .01#add random later
+    time_in_intersection = 0
     def pathfind(self):
         pass #self.path = list of nodes we want to get to
     
     def __init__(self):
         self.pathfind()
+        brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
         
-        
+    def crash(self,container):
+        try:    
+            container.nodeN.remove(self)
+        except:
+            pass
+        try:
+            container.nodeP.remove(self)
+        except:
+            pass
+        try:
+            container.cars_in_intersection.remove(self)
+        except:
+            pass
+        del self
 
 class edge():
-    
+    ud = False
+    def get_length(self):
+        self.length = ((self.nodeP.x-self.nodeN.x)**2+(self.nodeP.y-self.nodeN.y)**2)**0.5
     def __init__(self, nodeP, nodeN): #carsp = cars going in positive direction; carsn = cars going in negative direction
         self.nodeP,self.nodeN=nodeP,nodeN
-        self.cars = cars
         self.carsP,self.carsN=[],[]
-        
+        self.speed_limit = 0.5
+        self.get_length()
+        ud = bool(abs(nodeP.y-nodeN.y))
+    
+    
     def tick(self):
-        for i in range(len(carsP)):
-            if len(carsP)<i+1:
-                if abs(carsP[i+1].position-carsP[i].position):
-                    pass
-        
+        # Process both directions: positive and negative
+        for cars, node in [(self.carsP, self.nodeN), (self.carsN, self.nodeP)]:
+            for i in range(len(cars)):
+                current_car = cars[i]
+                should_brake = False
+                
+                # Check for car ahead
+                if i < len(cars) - 1:  # If not the last car
+                    next_car = cars[i + 1]
+                    between = next_car.position - current_car.position
+                    
+                    # Check for collision
+                    if between < 0:
+                        current_car.crash(self)
+                        next_car.crash(self)
+                        continue
+                    
+                    # Check if too close to car ahead
+                    if between <= current_car.brake_dist:
+                        should_brake = True
+                
+                # Check stoplight
+                if (node.lightud ^ self.ud) and self.length-current_car.position<=traffic_light_range:  # If light is red
+                    should_brake = True
+                    
+                # Apply acceleration/deceleration
+                if should_brake:
+                    current_car.speed = max(0, current_car.speed - current_car.brake_accel)
+                else:
+                    current_car.speed = min(self.speed_limit, current_car.speed + current_car.accel)
+                    
+                
+                        
+                    
 
     
 #create nodes ---------------
@@ -107,8 +158,6 @@ for n in range(len(nodes)):
     #print("Pre-edit: ",n,nodes[n])
     node=nodes[n]
     for direction in "udlr":
-        print(node)
-        print(direction)
         if node.edges[direction] == None:
             next_node = find_next_node(node,direction)
             #print(next_node)
@@ -120,5 +169,3 @@ for n in range(len(nodes)):
             else:
                 node.edges[direction] = False
         
-    print("Post-edit: ",node)
-print(edges)
