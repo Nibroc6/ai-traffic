@@ -60,7 +60,13 @@ while running:
     #put a cirlce at node position
     for n in nodes:
         node_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * n.x) + node_rad, ((screen.get_height() / mapsize[1]) * n.y) + node_rad)
-        pygame.draw.circle(screen, "red", node_pos, node_rad)
+        if n.lightud:
+            node_color = "green"
+        else:
+            node_color = "red"
+        
+        
+        pygame.draw.circle(screen, node_color, node_pos, node_rad)
         #go through 4 edges and go to their nodes. draw a line from n to that node
         if(n.edges["u"]):
             e = n.edges["u"]
