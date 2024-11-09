@@ -146,7 +146,7 @@ class car():
     d_path = None
 
     accel = .005/60#add random later
-    brake_accel = .02/60#add random later
+    brake_accel = .1/60#add random later
     time_in_intersection = 0
     def pathfind(self):
         pass #self.path = list of nodes we want to get to
@@ -187,7 +187,7 @@ class edge():
         ud = bool(abs(nodeP.y-nodeN.y))
     
     
-    def tick(self):
+    def ctick(self):
         # Process both directions: positive and negative
         for cars, node in [(self.carsP, self.nodeN), (self.carsN, self.nodeP)]:
             for i in range(len(cars)):
@@ -210,7 +210,8 @@ class edge():
                         should_brake = True
                 
                 # Check stoplight
-                if (node.lightud ^ self.ud) and self.length-current_car.position<=traffic_light_range:  # If light is red
+                print(self.length-current_car.position, node.lightud, self.ud)
+                if (node.lightud ^ self.ud) and (self.length-current_car.position)<=traffic_light_range:  # If light is red
                     should_brake = True
                     
                 # Apply acceleration/deceleration
