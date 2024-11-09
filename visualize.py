@@ -79,11 +79,11 @@ while running:
             #render cars
             for c in e.carsP:
                 origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * a.x) + node_rad, ((screen.get_height() / mapsize[1]) * a.y) + node_rad)
-                r = pygame.Rect(origin_pos[0]+(.5*road_width), origin_pos[1]-((screen.get_height() / mapsize[1])*c.position), carWidth, carHeight)
+                r = pygame.Rect(origin_pos[0]+(.5*road_width), origin_pos[1]+((screen.get_height() / mapsize[1])*c.position), carWidth, carHeight)
                 pygame.draw.rect(screen, "blue", r)
             for c in e.carsN:
                 origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * b.x) + node_rad, ((screen.get_height() / mapsize[1]) * b.y) + node_rad)
-                r = pygame.Rect(origin_pos[0]-carWidth, origin_pos[1]+((screen.get_height() / mapsize[1])*c.position), carWidth, carHeight)
+                r = pygame.Rect(origin_pos[0]-carWidth-(.5*road_width), origin_pos[1]-((screen.get_height() / mapsize[1])*c.position), carWidth, carHeight)
                 pygame.draw.rect(screen, "green", r)
 
             #render road
@@ -108,11 +108,11 @@ while running:
             #render cars
             for c in e.carsP:
                 origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * a.x) + node_rad, ((screen.get_height() / mapsize[1]) * a.y) + node_rad)
-                r = pygame.Rect(origin_pos[0]+(.5*road_width), origin_pos[1]-((screen.get_height() / mapsize[1])*c.position), carWidth, carHeight)
+                r = pygame.Rect(origin_pos[0]+(.5*road_width), origin_pos[1]+((screen.get_height() / mapsize[1])*c.position), carWidth, carHeight)
                 pygame.draw.rect(screen, "blue", r)
             for c in e.carsN:
                 origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * b.x) + node_rad, ((screen.get_height() / mapsize[1]) * b.y) + node_rad)
-                r = pygame.Rect(origin_pos[0]-carWidth, origin_pos[1]+((screen.get_height() / mapsize[1])*c.position), carWidth, carHeight)
+                r = pygame.Rect(origin_pos[0]-carWidth, origin_pos[1]-((screen.get_height() / mapsize[1])*c.position), carWidth, carHeight)
                 pygame.draw.rect(screen, "green", r)
 
 

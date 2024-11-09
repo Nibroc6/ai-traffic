@@ -86,26 +86,41 @@ def get_neighbor (node):
     return result
 
 
-def path(n):
-    goal_node = nodes[random.randint(0, len(nodes)-1)]
+def path(start):
+    # First, create a random target node (select a node other than the start node)
+    random_target = None
+    while random_target is None or random_target == start:
+        random_target = random.choice(nodes)  # Randomly select a node, ensuring it's not the start node
+    # Initialize BFS structures
+    queue = [start]  # BFS queue
+    came_from = {start: None}  # Dictionary to track the parent of each node
     
-    v_nodes = [n]
-    path = [n]
-    print('goal:', goal_node)
-    
-    while path[-1] != goal_node:
-        neighbors = get_neighbor(path[-1])
-        if goal_node in [n[0] for n in neighbors]:
-            path.append(goal_node)
-            return path
+    # BFS loop
+    while queue:
+        current_node = queue.pop(0)
         
-        for n in neighbors:
-            if n[0] in v_nodes:
-                continue
-            else:
-                path.append()
+        # Check if we've reached the target node
+        if current_node == random_target:
+            break
+        
+        # Get all neighbors of the current node
+        neighbors = get_neighbor(current_node)
+        
+        for neighbor, direction in neighbors:
+            if neighbor not in came_from:  # If neighbor hasn't been visited
+                queue.append(neighbor)
+                came_from[neighbor] = current_node
     
-    return path
+    # Reconstruct the path from target to start by following parent nodes
+    path_list = []
+    current_node = random_target
+    while current_node is not None:
+        path_list.append(current_node)
+        current_node = came_from[current_node]
+    
+    path_list.reverse()  # Reverse to get path from start to target
+    return path_list
+
 
 
 
@@ -145,6 +160,13 @@ class car():
     #def __init__(self, start):
     #    d_path = path(start)
     #    brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
+    """
+    def __init__(self, start):
+        d_path = path(start)
+        brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
+    """
+    def __init__(self):
+        brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
 
     def __str__(self):
         return str([attr for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__")])
@@ -224,7 +246,6 @@ for y in range(mapsize[0]):
 #print(nodes[0].x,nodes[0].y,n:=next_node(nodes[0],"d"))
 #if n: print(n.x,n.y)
 #create edges ---------------
-
 for n in range(len(nodes)):
     #print("Pre-edit: ",n,nodes[n])
     node=nodes[n]
@@ -243,3 +264,6 @@ for n in range(len(nodes)):
     #print(node)
 for n in nodes: 
     n.lightud = bool(random.randint(0,1))
+
+
+[print(n) for n in path(nodes[0])]
