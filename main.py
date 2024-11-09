@@ -12,7 +12,7 @@ class node():
     edges={"u":None,"d":None,"l":None,"r":None}
     lightud=False
     cars_in_intersection = []
-	def __init__(self,pos): #pos is a list or tuple of length 2 (x,y)
+    def __init__(self,pos): #pos is a list or tuple of length 2 (x,y)
         self.x,self.y=pos
         
     def move_car(self):
@@ -24,11 +24,11 @@ class car():
         pass #self.path = list of nodes we want to get to
     
     def __init__(self,):
-		self.pathfind()
+        self.pathfind()
         
 
 class edge():
-	def __init__(self, carsP, carsN, nodeP, nodeN): #carsp = cars going in positive direction; carsn = cars going in negative direction
+    def __init__(self, carsP, carsN, nodeP, nodeN): #carsp = cars going in positive direction; carsn = cars going in negative direction
         self.nodeP,self.nodeN=nodeP,nodeN
         self.carsP,self.carsN = carsP,carsN
         self.cars = cars
@@ -40,8 +40,8 @@ if __name__="__main__":
             if random.randint(0,2):
                 nodes.append(node([x,y]))
     
-    print(nodes)
     for node in nodes:
+    print(nodes)
         pass
         #i
         #edges.append(
