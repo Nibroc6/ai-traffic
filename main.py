@@ -67,6 +67,20 @@ def transition(current_loc, car): #cloc can be node or edge
             remove_item(current_loc.nodeP, car)   
             remove_item(current_loc.nodeN, car)
         
+def get_neighbor (node):
+    #returns list of tuples. form [(node, dir), (node,dir)]
+    out = []
+
+    out.append((find_next_node(node, 'u'), 'u'))
+    out.append((find_next_node(node, 'r'), 'r'))
+    out.append ((find_next_node(node, 'd'), 'd'))
+    out.append((find_next_node(node, 'l'), 'l'))
+    
+    result = []
+    for i in range (len(out)):
+        if not( out[i][0] == False or out[i][0] == None):
+            result.append(out[i])
+    return result
 
 
 class node():
@@ -78,7 +92,9 @@ class node():
         
     def move_car(self):
         pass
-
+        
+    def __str__(self):
+        return str(self.edges)+"\n"+str(self.lightud)+"\n"+str(self.cars_in_intersection)+"\n"+str(f"({self.x},{self.y})")
 
     def __str__(self):
         return str(self.edges)+"\n"+str(self.lightud)+"\n"+str(self.cars_in_intersection)+"\n"+str(f"({self.x},{self.y})")
@@ -86,11 +102,13 @@ class node():
 class car():
     speed = 0
     position = 0
+    ticked = False
     def pathfind(self):
         pass #self.path = list of nodes we want to get to
     
-    def __init__(self,):
+    def __init__(self):
         self.pathfind()
+        
         
 
 class edge():
@@ -100,6 +118,13 @@ class edge():
         self.cars = cars
         self.carsP,self.carsN=[],[]
         
+    def tick(self):
+        for i in range(len(carsP)):
+            if len(carsP)<i+1:
+                if abs(carsP[i+1].position-carsP[i].position):
+                    pass
+        
+
     
 #create nodes ---------------
 for y in range(mapsize[0]):
@@ -126,19 +151,6 @@ for n in range(len(nodes)):
                 next_node.edges[inverse_directions[direction]] = new_edge
             else:
                 node.edges[direction] = False
-
-if __name__=="__main__":
-    for y in range(mapsize[0]):
-        for x in range(mapsize[1]):
-            if random.randint(0,2):
-                nodes.append(node([x,y]))
-    
-    
-    [print(n) for n in nodes]
-    for node in nodes:
-        pass
-        #i
-        #edges.append(
-            
+        
     print("Post-edit: ",node)
 print(edges)
