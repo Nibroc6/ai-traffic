@@ -1,6 +1,5 @@
 import random, pickle
 
-
 edges = []
 nodes = []
 cars = []
@@ -9,6 +8,8 @@ mapsize = [10,10]
 car_breaking_range = (0.1,0.3)
 traffic_light_range = .4
 inverse_directions = {"u":"d","d":"u","l":"r","r":"l"}
+
+
 
 def node_by_pos(x,y):
     for n in nodes:
@@ -85,6 +86,30 @@ def get_neighbor (node):
     return result
 
 
+def path(n):
+    goal_node = nodes[random.randint(0, len(nodes)-1)]
+    
+    v_nodes = [n]
+    path = [n]
+    print('goal:', goal_node)
+    
+    while path[-1] != goal_node:
+        neighbors = get_neighbor(path[-1])
+        if goal_node in [n[0] for n in neighbors]:
+            path.append(goal_node)
+            return path
+        
+        for n in neighbors:
+            if n[0] in v_nodes:
+                continue
+            else:
+                path.append()
+    
+    return path
+
+
+
+
 class node():
     def __init__(self,pos): #pos is a list or tuple of length 2 (x,y)
         self.lightud=False
@@ -103,6 +128,8 @@ class car():
     speed = 0
     position = 0
     ticked = False
+    d_path = None
+
     accel = .005/60#add random later
     brake_accel = .1/60#add random later
     time_in_intersection = 0
@@ -110,9 +137,11 @@ class car():
         pass #self.path = list of nodes we want to get to
     
     def __init__(self):
-        self.pathfind()
         brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
-        
+    def __init__(self, start):
+        d_path = path(start)
+        brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
+
     def __str__(self):
         return str([attr for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__")])
         
@@ -191,6 +220,7 @@ for y in range(mapsize[0]):
 #print(nodes[0].x,nodes[0].y,n:=next_node(nodes[0],"d"))
 #if n: print(n.x,n.y)
 #create edges ---------------
+
 for n in range(len(nodes)):
     #print("Pre-edit: ",n,nodes[n])
     node=nodes[n]
