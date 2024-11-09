@@ -45,7 +45,8 @@ class node():
         
     def move_car(self):
         pass
-        
+
+
     def __str__(self):
         return str(self.edges)+"\n"+str(self.lightud)+"\n"+str(self.cars_in_intersection)+"\n"+str(f"({self.x},{self.y})")
 
@@ -92,6 +93,19 @@ for n in range(len(nodes)):
                 next_node.edges[inverse_directions[direction]] = new_edge
             else:
                 node.edges[direction] = False
-        
+
+if __name__=="__main__":
+    for y in range(mapsize[0]):
+        for x in range(mapsize[1]):
+            if random.randint(0,2):
+                nodes.append(node([x,y]))
+    
+    
+    [print(n) for n in nodes]
+    for node in nodes:
+        pass
+        #i
+        #edges.append(
+            
     print("Post-edit: ",node)
 print(edges)
