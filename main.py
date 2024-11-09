@@ -41,5 +41,6 @@ if __name__="__main__":
                 nodes.append(node([x,y]))
     
     for node in nodes:
+        i
         edges.append(
             
