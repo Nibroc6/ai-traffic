@@ -147,6 +147,22 @@ class node():
     def __str__(self):
         return str(self.edges)+"\n"+str(self.lightud)+"\n"+str(self.cars_in_intersection)+"\n"+str(f"({self.x},{self.y})")
 
+    def ctick(self):
+        # Process cars in intersection
+        i = 0
+        while i < len(self.cars_in_intersection):
+            car = self.cars_in_intersection[i]
+            
+            # Increment time in intersection
+            car.time_in_intersection += 1
+            
+            # If car has been in intersection for 10 ticks, move it to next road
+            if car.time_in_intersection >= 10:
+                car.time_in_intersection = 0  # Reset timer
+                transition(self, car)  # This will move car to next road
+                # Don't increment i since we removed a car
+            else:
+                i += 1
 
 class car():
     speed = 0
@@ -227,7 +243,8 @@ class edge():
     def ctick(self):
         # Process both directions: positive and negative
         for cars, node in [(self.carsP, self.nodeN), (self.carsN, self.nodeP)]:
-            for i in range(len(cars)):
+            i = 0
+            while i < len(cars):  # Using a while loop to manage index manually
                 current_car = cars[i]
                 should_brake = False
                 
@@ -247,21 +264,25 @@ class edge():
                         should_brake = True
                 
                 # Check stoplight
-                if (node.lightud ^ self.ud) and (self.length-current_car.position)<=traffic_light_range:  # If light is red
+                if (node.lightud ^ self.ud) and (self.length - current_car.position) <= traffic_light_range:
                     should_brake = True
-                #print(self.length-current_car.position, node.lightud, self.ud, should_brake)
 
                 # Apply acceleration/deceleration
                 if should_brake:
                     current_car.speed = max(0, current_car.speed - current_car.brake_accel)
                 else:
                     current_car.speed = min(self.speed_limit, current_car.speed + current_car.accel)
-                current_car.position += current_car.speed
-                #print(current_car)
                 
-                if current_car.position>=self.length:
+                current_car.position += current_car.speed
+                
+                # Check if car reached the end of the edge
+                if current_car.position >= self.length:
                     transition(self, current_car)
-                    
+                    # Remove car if transitioned to avoid index issues
+                    cars.pop(i)
+                else:
+                    i += 1  # Increment only if no transition
+
 
     
 #create nodes ---------------

@@ -44,6 +44,9 @@ carHeight = 10
 carWidth = 5
 
 while running:
+    for n in nodes:
+        n.ctick()
+        
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
     for event in pygame.event.get():
@@ -187,6 +190,6 @@ while running:
     # limits FPS to 60
     # dt is delta time in seconds since last frame, used for framerate-
     # independent physics.
-    dt = clock.tick(60) / 1000
+    dt = clock.tick(20) / 1000
 
 pygame.quit()
