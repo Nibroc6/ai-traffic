@@ -45,15 +45,10 @@ class node():
         
     def move_car(self):
         pass
-<<<<<<< HEAD
-    
-    def __str__(self):
-        return f'({self.x}, {self.y})'
-=======
-        
+
+
     def __str__(self):
         return str(self.edges)+"\n"+str(self.lightud)+"\n"+str(self.cars_in_intersection)+"\n"+str(f"({self.x},{self.y})")
->>>>>>> 5f46769401a323711da7685fb1f499d89e83b5b7
 
 class car():
     speed = 0
@@ -96,8 +91,7 @@ for n in range(len(nodes)):
                 next_node.edges[inverse_directions[direction]] = new_edge
             else:
                 node.edges[direction] = False
-        
-<<<<<<< HEAD
+
 if __name__=="__main__":
     for y in range(mapsize[0]):
         for x in range(mapsize[1]):
@@ -111,7 +105,5 @@ if __name__=="__main__":
         #i
         #edges.append(
             
-=======
     print("Post-edit: ",node)
 print(edges)
->>>>>>> 5f46769401a323711da7685fb1f499d89e83b5b7
