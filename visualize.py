@@ -14,20 +14,17 @@ dt = 0
 
 #make sum fuckin fcars
 for e in edges:
-
-
     length = e.length
-
-
     if random.randint(0,1):
-        c = car(e.nodeP)
+        # Cars going in positive direction (nodeP to nodeN)
+        c = car(e.nodeP, e.nodeN)  # Pass both start and end nodes
         c.position = random.uniform(0, length)
         e.carsP.insert(0, c)
-
-        c = car(e.nodeN)
+        
+        # Cars going in negative direction (nodeN to nodeP)
+        c = car(e.nodeN, e.nodeP)  # Pass both start and end nodes
         c.position = random.uniform(0, length)
         e.carsN.insert(0, c)
-
 
 
 

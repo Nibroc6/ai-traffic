@@ -51,20 +51,20 @@ def transition(current_loc, car): #cloc can be node or edge
                 d_node = car.path[i+1]
         if d_node:
             if d_node.x - current_loc.x > 0:
-                current_loc.edges['r'].append(car)
+                current_loc.edges['r'].insert(0,car)
             elif d_node.x - current_loc.x < 0:
-                current_loc.edges['l'].append(car)
+                current_loc.edges['l'].insert(0,car)
             elif d_node.y - current_loc.y < 0:
-                current_loc.edges['u'].append(car)
+                current_loc.edges['u'].insert(0,car)
             elif d_node.y - current_loc.y > 0:
-                current_loc.edges['d'].append(car)
+                current_loc.edges['d'].insert(0,car)
         remove_item(current_loc.cars_in_intersection, car)
     else:
-        if car.path.index(current_loc.nodeP) > car.path.index(current_loc.nodeN) and not current_loc.nodeP == current_loc:
-            current_loc.nodeP.append(car)
+        if not current_loc.nodeP == current_loc and car.path.index(current_loc.nodeP) > car.path.index(current_loc.nodeN):
+            current_loc.nodeP.insert(0,car)
             remove_item(current_loc.nodeN, car)
         elif car.path.index(current_loc.nodeN) > car.path.index(current_loc.nodeP) and not current_loc.nodeN == current_loc:
-            current_loc.nodeN.append(car)
+            current_loc.nodeN.insert(0,car)
             remove_item(current_loc.nodeP, car)
         else:
             remove_item(current_loc.nodeP, car)   
@@ -143,7 +143,7 @@ class car():
     speed = 0
     position = 0
     ticked = False
-    d_path = None
+    path = None
 
     accel = .005/60#add random later
     brake_accel = .1/60#add random later
@@ -153,21 +153,21 @@ class car():
     
     def __init__(self, start):
         self.brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
-        self.d_path = [start]
+        self.path = [start]
         for i in range(5):
-            self.d_path.append(random.choice(get_neighbor(self.d_path[-1]))[0])
-        del self.d_path[0]
+            self.path.append(random.choice(get_neighbor(self.path[-1]))[0])
+        del self.path[0]
     #def __init__(self, start):
-    #    d_path = path(start)
+    #    path = path(start)
     #    brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
     """
     def __init__(self, start):
         d_path = path(start)
         brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
-    """
+    
     def __init__(self):
         brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
-
+    """
     def __str__(self):
         return str([attr for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__")])
         
@@ -233,7 +233,8 @@ class edge():
                 current_car.position += current_car.speed
                 #print(current_car)
                 
-                        
+                if current_car.position>=self.length:
+                    transition(self, current_car)
                     
 
     
