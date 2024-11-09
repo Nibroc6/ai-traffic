@@ -151,10 +151,11 @@ class car():
     def pathfind(self):
         pass #self.path = list of nodes we want to get to
     
-    def __init__(self):
-        brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
+    
     def __init__(self, start):
         d_path = path(start)
+        brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
+    def __init__(self):
         brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
 
     def __str__(self):
@@ -235,5 +236,23 @@ for y in range(mapsize[0]):
 #print(nodes[0].x,nodes[0].y,n:=next_node(nodes[0],"d"))
 #if n: print(n.x,n.y)
 #create edges ---------------
+for n in range(len(nodes)):
+    #print("Pre-edit: ",n,nodes[n])
+    node=nodes[n]
+    for direction in "udlr":
+        if node.edges[direction] == None:
+            next_node = find_next_node(node,direction)
+            #print(next_node)
+            if next_node:
+                new_edge = edge(node,next_node)
+                edges.append(new_edge)
+                node.edges[direction] = new_edge
+                next_node.edges[inverse_directions[direction]] = new_edge
+            else:
+                node.edges[direction] = False
+        
+    #print(node)
+
+
 
 [print(n) for n in path(nodes[0])]
