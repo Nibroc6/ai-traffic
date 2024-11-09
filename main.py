@@ -6,8 +6,8 @@ nodes = []
 cars = []
 
 mapsize = [10,10]
-car_breaking_range = (0.1,0.3)
-traffic_light_range = .4
+car_breaking_range = (0.1/60,0.3/60)
+traffic_light_range = .4/60
 inverse_directions = {"u":"d","d":"u","l":"r","r":"l"}
 
 def node_by_pos(x,y):
@@ -103,8 +103,8 @@ class car():
     speed = 0
     position = 0
     ticked = False
-    accel = .005#add random later
-    brake_accel = .01#add random later
+    accel = .005/60#add random later
+    brake_accel = .01/60#add random later
     time_in_intersection = 0
     def pathfind(self):
         pass #self.path = list of nodes we want to get to
@@ -135,7 +135,7 @@ class edge():
     def __init__(self, nodeP, nodeN): #carsp = cars going in positive direction; carsn = cars going in negative direction
         self.nodeP,self.nodeN=nodeP,nodeN
         self.carsP,self.carsN=[],[]
-        self.speed_limit = 0.5
+        self.speed_limit = 0.5/60
         self.get_length()
         ud = bool(abs(nodeP.y-nodeN.y))
     
