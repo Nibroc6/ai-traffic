@@ -14,6 +14,12 @@ def node_by_pos(x,y):
             return n
     return False
 
+def remove_item(l, i):
+    try:
+        l.remove(i)
+    except  ValueError:
+        return -1
+
 def find_next_node(node, d):
     x,y = node.x,node.y
     if d in "ud":
@@ -33,6 +39,33 @@ def find_next_node(node, d):
             if new_node := node_by_pos(x,y):
                 return new_node
     return False
+        
+def transition(current_loc, car): #cloc can be node or edge
+    d_node = None
+    if type(current_loc) is node:
+        for i in range(len(car.path)-1):
+            if car.path[i] == current_loc:
+                d_node = car.path[i+1]
+        if d_node:
+            if d_node.x - current_loc.x > 0:
+                current_loc.edges['r'].append(car)
+            elif d_node.x - current_loc.x < 0:
+                current_loc.edges['l'].append(car)
+            elif d_node.y - current_loc.y < 0:
+                current_loc.edges['u'].append(car)
+            elif d_node.y - current_loc.y > 0:
+                current_loc.edges['d'].append(car)
+        remove_item(current_loc.cars_in_intersection, car)
+    else:
+        if car.path.index(current_loc.nodeP) > car.path.index(current_loc.nodeN) and not current_loc.nodeP == current_loc:
+            current_loc.nodeP.append(car)
+            remove_item(current_loc.nodeN, car)
+        elif car.path.index(current_loc.nodeN) > car.path.index(current_loc.nodeP) and not current_loc.nodeN == current_loc:
+            current_loc.nodeN.append(car)
+            remove_item(current_loc.nodeP, car)
+        else:
+            remove_item(current_loc.nodeP, car)   
+            remove_item(current_loc.nodeN, car)
         
 
 
