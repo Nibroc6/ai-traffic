@@ -40,7 +40,9 @@ if __name__="__main__":
             if random.randint(0,2):
                 nodes.append(node([x,y]))
     
+    print(nodes)
     for node in nodes:
-        i
-        edges.append(
+        pass
+        #i
+        #edges.append(
             
