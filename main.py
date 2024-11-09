@@ -1,12 +1,13 @@
 import random, pickle
 
-
 edges = []
 nodes = []
 cars = []
 
 mapsize = [10,10]
 inverse_directions = {"u":"d","d":"u","l":"r","r":"l"}
+
+
 
 def node_by_pos(x,y):
     for n in nodes:
@@ -83,6 +84,30 @@ def get_neighbor (node):
     return result
 
 
+def path(n):
+    goal_node = nodes[random.randint(0, len(nodes)-1)]
+    
+    v_nodes = [n]
+    path = [n]
+    print('goal:', goal_node)
+    
+    while path[-1] != goal_node:
+        neighbors = get_neighbor(path[-1])
+        if goal_node in [n[0] for n in neighbors]:
+            path.append(goal_node)
+            return path
+        
+        for n in neighbors:
+            if n[0] in v_nodes:
+                continue
+            else:
+                path.append()
+    
+    return path
+
+
+
+
 class node():
     def __init__(self,pos): #pos is a list or tuple of length 2 (x,y)
         self.lightud=False
@@ -103,13 +128,15 @@ class car():
     speed = 0
     position = 0
     ticked = False
+    d_path = None
     def pathfind(self):
         pass #self.path = list of nodes we want to get to
     
-    def __init__(self):
-        self.pathfind()
+    def __init__(self, start):
+        d_path = path(start)
         
-        
+    def __str__(self):
+        return f"pos: {position} | desired path: {d_path}"
 
 class edge():
     
@@ -135,22 +162,6 @@ for y in range(mapsize[0]):
 #print(nodes[0].x,nodes[0].y,n:=next_node(nodes[0],"d"))
 #if n: print(n.x,n.y)
 #create edges ---------------
-for n in range(len(nodes)):
-    #print("Pre-edit: ",n,nodes[n])
-    node=nodes[n]
-    for direction in "udlr":
-        print(node)
-        print(direction)
-        if node.edges[direction] == None:
-            next_node = find_next_node(node,direction)
-            #print(next_node)
-            if next_node:
-                new_edge = edge(node,next_node)
-                edges.append(new_edge)
-                node.edges[direction] = new_edge
-                next_node.edges[inverse_directions[direction]] = new_edge
-            else:
-                node.edges[direction] = False
-        
-    print("Post-edit: ",node)
-print(edges)
+
+test = car(nodes[-1])
+#[print(v) for v in get_neighbor(nodes[-1])]
