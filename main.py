@@ -45,12 +45,14 @@ def find_next_node(node, d):
         
 def transition(current_loc, car): #cloc can be node or edge
     d_node = None
-    if type(current_loc) is node:
+    if type(current_loc).__name__ == 'node':  # Changed from isinstance() to type check
+        # Handle transition from node to edge
         for i in range(len(car.path)-1):
             if car.path[i] == current_loc:
                 d_node = car.path[i+1]
         if d_node:
             if d_node.x - current_loc.x > 0:
+<<<<<<< Updated upstream
                 current_loc.edges['r'].append(car)
             elif d_node.x - current_loc.x < 0:
                 current_loc.edges['l'].append(car)
@@ -69,6 +71,34 @@ def transition(current_loc, car): #cloc can be node or edge
         else:
             remove_item(current_loc.nodeP, car)   
             remove_item(current_loc.nodeN, car)
+=======
+                current_loc.edges['r'].carsP.insert(0, car)
+            elif d_node.x - current_loc.x < 0:
+                current_loc.edges['l'].carsN.insert(0, car)
+            elif d_node.y - current_loc.y < 0:
+                current_loc.edges['u'].carsN.insert(0, car)
+            elif d_node.y - current_loc.y > 0:
+                current_loc.edges['d'].carsP.insert(0, car)
+        remove_item(current_loc.cars_in_intersection, car)
+    else:
+        # Handle transition from edge to node
+        try:
+            next_idx = car.path.index(current_loc.nodeN)
+            prev_idx = car.path.index(current_loc.nodeP)
+            
+            if next_idx > prev_idx:  # Car is moving toward nodeN
+                if current_loc.nodeN != current_loc:
+                    current_loc.nodeN.cars_in_intersection.insert(0, car)
+                remove_item(current_loc.carsP, car)
+            else:  # Car is moving toward nodeP
+                if current_loc.nodeP != current_loc:
+                    current_loc.nodeP.cars_in_intersection.insert(0, car)
+                remove_item(current_loc.carsN, car)
+        except ValueError:
+            # Handle case where nodes aren't in path
+            print(f"Warning: Node not found in car's path")
+            return
+>>>>>>> Stashed changes
         
 def get_neighbor (node):
     #returns list of tuples. form [(node, dir), (node,dir)]
@@ -143,20 +173,51 @@ class car():
     speed = 0
     position = 0
     ticked = False
+<<<<<<< Updated upstream
     d_path = None
 
     accel = .005/60#add random later
     brake_accel = .1/60#add random later
+=======
+    path = None
+    accel = .005/60
+    brake_accel = .1/60
+>>>>>>> Stashed changes
     time_in_intersection = 0
-    def pathfind(self):
-        pass #self.path = list of nodes we want to get to
     
-    def __init__(self, start):
+    def __init__(self, start, next_node=None):
         self.brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
+<<<<<<< Updated upstream
         self.d_path = [start]
         for i in range(5):
             self.d_path.append(random.choice(get_neighbor(self.d_path[-1]))[0])
         del self.d_path[0]
+=======
+        self.path = [start]
+        
+        if next_node:
+            # If we're given a next node, make sure it's in the path
+            self.path.append(next_node)
+            # Then continue with random path from there
+            current = next_node
+            for i in range(4):  # Reduced by 1 since we already added next_node
+                neighbors = get_neighbor(current)
+                if not neighbors:
+                    break
+                next_choice = random.choice(neighbors)[0]
+                if next_choice not in self.path:  # Avoid loops
+                    self.path.append(next_choice)
+                    current = next_choice
+        else:
+            # Original random path generation
+            for i in range(5):
+                neighbors = get_neighbor(self.path[-1])
+                if not neighbors:
+                    break
+                next_choice = random.choice(neighbors)[0]
+                if next_choice not in self.path:  # Avoid loops
+                    self.path.append(next_choice)
+>>>>>>> Stashed changes
     #def __init__(self, start):
     #    d_path = path(start)
     #    brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
