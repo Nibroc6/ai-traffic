@@ -33,6 +33,23 @@ def find_next_node(node, d):
             if new_node := node_by_pos(x,y):
                 return new_node
     return False
+        
+def get_neighbor (node):
+    #returns list of tuples. form [(node, dir), (node,dir)]
+    out = []
+
+    out.append((find_next_node(node, 'u'), 'u'))
+    out.append((find_next_node(node, 'r'), 'r'))
+    out.append ((find_next_node(node, 'd'), 'd'))
+    out.append((find_next_node(node, 'l'), 'l'))
+    
+    result = []
+    for i in range (len(out)):
+        if not( out[i][0] == False or out[i][0] == None):
+            result.append(out[i])
+    return result
+
+
 
 class node():
     def __init__(self,pos): #pos is a list or tuple of length 2 (x,y)
@@ -43,6 +60,9 @@ class node():
         
     def move_car(self):
         pass
+        
+    def __str__(self):
+        return str(self.edges)+"\n"+str(self.lightud)+"\n"+str(self.cars_in_intersection)+"\n"+str(f"({self.x},{self.y})")
 
     def __str__(self):
         return str(self.edges)+"\n"+str(self.lightud)+"\n"+str(self.cars_in_intersection)+"\n"+str(f"({self.x},{self.y})")
@@ -99,19 +119,6 @@ for n in range(len(nodes)):
                 next_node.edges[inverse_directions[direction]] = new_edge
             else:
                 node.edges[direction] = False
-
-if __name__=="__main__":
-    for y in range(mapsize[0]):
-        for x in range(mapsize[1]):
-            if random.randint(0,2):
-                nodes.append(node([x,y]))
-    
-    
-    [print(n) for n in nodes]
-    for node in nodes:
-        pass
-        #i
-        #edges.append(
-            
+        
     print("Post-edit: ",node)
 print(edges)
