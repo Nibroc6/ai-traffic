@@ -171,7 +171,7 @@ class edge():
                     current_car.speed = max(0, current_car.speed - current_car.brake_accel)
                 else:
                     current_car.speed = min(self.speed_limit, current_car.speed + current_car.accel)
-                    
+                current_car.position += current_car.speed
                 
                         
                     
