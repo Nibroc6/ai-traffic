@@ -33,8 +33,6 @@ def find_next_node(node, d):
             if new_node := node_by_pos(x,y):
                 return new_node
     return False
-        
-
 
 class node():
     def __init__(self,pos): #pos is a list or tuple of length 2 (x,y)
@@ -46,18 +44,19 @@ class node():
     def move_car(self):
         pass
 
-
     def __str__(self):
         return str(self.edges)+"\n"+str(self.lightud)+"\n"+str(self.cars_in_intersection)+"\n"+str(f"({self.x},{self.y})")
 
 class car():
     speed = 0
     position = 0
+    ticked = False
     def pathfind(self):
         pass #self.path = list of nodes we want to get to
     
-    def __init__(self,):
+    def __init__(self):
         self.pathfind()
+        
         
 
 class edge():
@@ -67,6 +66,13 @@ class edge():
         self.cars = cars
         self.carsP,self.carsN=[],[]
         
+    def tick(self):
+        for i in range(len(carsP)):
+            if len(carsP)<i+1:
+                if abs(carsP[i+1].position-carsP[i].position):
+                    pass
+        
+
     
 #create nodes ---------------
 for y in range(mapsize[0]):
