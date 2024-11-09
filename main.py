@@ -34,14 +34,15 @@ class edge():
         self.cars = cars
         
         
-if __name__="__main__":
+if __name__=="__main__":
     for y in range(mapsize[0]):
         for x in range(mapsize[1]):
             if random.randint(0,2):
                 nodes.append(node([x,y]))
     
-    for node in nodes:
+    
     print(nodes)
+    for node in nodes:
         pass
         #i
         #edges.append(
