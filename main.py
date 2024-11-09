@@ -52,26 +52,6 @@ def transition(current_loc, car): #cloc can be node or edge
                 d_node = car.path[i+1]
         if d_node:
             if d_node.x - current_loc.x > 0:
-<<<<<<< Updated upstream
-                current_loc.edges['r'].append(car)
-            elif d_node.x - current_loc.x < 0:
-                current_loc.edges['l'].append(car)
-            elif d_node.y - current_loc.y < 0:
-                current_loc.edges['u'].append(car)
-            elif d_node.y - current_loc.y > 0:
-                current_loc.edges['d'].append(car)
-        remove_item(current_loc.cars_in_intersection, car)
-    else:
-        if car.path.index(current_loc.nodeP) > car.path.index(current_loc.nodeN) and not current_loc.nodeP == current_loc:
-            current_loc.nodeP.append(car)
-            remove_item(current_loc.nodeN, car)
-        elif car.path.index(current_loc.nodeN) > car.path.index(current_loc.nodeP) and not current_loc.nodeN == current_loc:
-            current_loc.nodeN.append(car)
-            remove_item(current_loc.nodeP, car)
-        else:
-            remove_item(current_loc.nodeP, car)   
-            remove_item(current_loc.nodeN, car)
-=======
                 current_loc.edges['r'].carsP.insert(0, car)
             elif d_node.x - current_loc.x < 0:
                 current_loc.edges['l'].carsN.insert(0, car)
@@ -98,7 +78,6 @@ def transition(current_loc, car): #cloc can be node or edge
             # Handle case where nodes aren't in path
             print(f"Warning: Node not found in car's path")
             return
->>>>>>> Stashed changes
         
 def get_neighbor (node):
     #returns list of tuples. form [(node, dir), (node,dir)]
@@ -173,26 +152,13 @@ class car():
     speed = 0
     position = 0
     ticked = False
-<<<<<<< Updated upstream
-    d_path = None
-
-    accel = .005/60#add random later
-    brake_accel = .1/60#add random later
-=======
     path = None
     accel = .005/60
     brake_accel = .1/60
->>>>>>> Stashed changes
     time_in_intersection = 0
     
     def __init__(self, start, next_node=None):
         self.brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
-<<<<<<< Updated upstream
-        self.d_path = [start]
-        for i in range(5):
-            self.d_path.append(random.choice(get_neighbor(self.d_path[-1]))[0])
-        del self.d_path[0]
-=======
         self.path = [start]
         
         if next_node:
@@ -217,18 +183,17 @@ class car():
                 next_choice = random.choice(neighbors)[0]
                 if next_choice not in self.path:  # Avoid loops
                     self.path.append(next_choice)
->>>>>>> Stashed changes
     #def __init__(self, start):
-    #    d_path = path(start)
+    #    path = path(start)
     #    brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
     """
     def __init__(self, start):
         d_path = path(start)
         brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
-    """
+    
     def __init__(self):
         brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
-
+    """
     def __str__(self):
         return str([attr for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__")])
         
@@ -294,7 +259,8 @@ class edge():
                 current_car.position += current_car.speed
                 #print(current_car)
                 
-                        
+                if current_car.position>=self.length:
+                    transition(self, current_car)
                     
 
     
