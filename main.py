@@ -136,11 +136,15 @@ class car():
     def pathfind(self):
         pass #self.path = list of nodes we want to get to
     
-    def __init__(self):
-        brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
     def __init__(self, start):
-        d_path = path(start)
-        brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
+        self.brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
+        self.d_path = [start]
+        for i in range(5):
+            self.d_path.append(random.choice(get_neighbor(self.d_path[-1]))[0])
+        del self.d_path[0]
+    #def __init__(self, start):
+    #    d_path = path(start)
+    #    brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
 
     def __str__(self):
         return str([attr for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__")])
@@ -169,7 +173,7 @@ class edge():
         self.carsP,self.carsN=[],[]
         self.speed_limit = 0.5/60
         self.get_length()
-        ud = bool(abs(nodeP.y-nodeN.y))
+        self.ud = bool(abs(nodeP.y-nodeN.y))
     
     
     def ctick(self):
@@ -195,17 +199,17 @@ class edge():
                         should_brake = True
                 
                 # Check stoplight
-                print(self.length-current_car.position, node.lightud, self.ud)
                 if (node.lightud ^ self.ud) and (self.length-current_car.position)<=traffic_light_range:  # If light is red
                     should_brake = True
-                    
+                #print(self.length-current_car.position, node.lightud, self.ud, should_brake)
+
                 # Apply acceleration/deceleration
                 if should_brake:
                     current_car.speed = max(0, current_car.speed - current_car.brake_accel)
                 else:
                     current_car.speed = min(self.speed_limit, current_car.speed + current_car.accel)
                 current_car.position += current_car.speed
-                print(current_car)
+                #print(current_car)
                 
                         
                     
@@ -237,3 +241,5 @@ for n in range(len(nodes)):
                 node.edges[direction] = False
         
     #print(node)
+for n in nodes: 
+    n.lightud = bool(random.randint(0,1))

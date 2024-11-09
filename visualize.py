@@ -20,11 +20,11 @@ for e in edges:
 
 
     if random.randint(0,1):
-        c = car()
+        c = car(e.nodeP)
         c.position = random.uniform(0, length)
         e.carsP.insert(0, c)
 
-        c = car()
+        c = car(e.nodeN)
         c.position = random.uniform(0, length)
         e.carsN.insert(0, c)
 
@@ -69,7 +69,7 @@ while running:
             e = n.edges["u"]
 
             #calling backend tick moving car shit
-            #e.ctick()
+            e.ctick()
 
 
             a = e.nodeP
@@ -97,7 +97,7 @@ while running:
             e = n.edges["d"]
 
             #calling backend tick moving car shit
-            #e.ctick()
+            e.ctick()
 
 
             a = e.nodeP
@@ -126,7 +126,7 @@ while running:
             e = n.edges["l"]
 
             #calling backend tick moving car shit
-            #e.ctick()
+            e.ctick()
 
 
             a = e.nodeP
@@ -157,7 +157,7 @@ while running:
 
 
             #calling backend tick moving car shit
-            #e.ctick()
+            e.ctick()
 
 
             a = e.nodeP
