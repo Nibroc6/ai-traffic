@@ -201,3 +201,4 @@ for n in range(len(nodes)):
             else:
                 node.edges[direction] = False
         
+    #print(node)
