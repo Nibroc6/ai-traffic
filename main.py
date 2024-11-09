@@ -86,26 +86,41 @@ def get_neighbor (node):
     return result
 
 
-def path(n):
-    goal_node = nodes[random.randint(0, len(nodes)-1)]
+def path(start):
+    # First, create a random target node (select a node other than the start node)
+    random_target = None
+    while random_target is None or random_target == start:
+        random_target = random.choice(nodes)  # Randomly select a node, ensuring it's not the start node
+    # Initialize BFS structures
+    queue = [start]  # BFS queue
+    came_from = {start: None}  # Dictionary to track the parent of each node
     
-    v_nodes = [n]
-    path = [n]
-    print('goal:', goal_node)
-    
-    while path[-1] != goal_node:
-        neighbors = get_neighbor(path[-1])
-        if goal_node in [n[0] for n in neighbors]:
-            path.append(goal_node)
-            return path
+    # BFS loop
+    while queue:
+        current_node = queue.pop(0)
         
-        for n in neighbors:
-            if n[0] in v_nodes:
-                continue
-            else:
-                path.append()
+        # Check if we've reached the target node
+        if current_node == random_target:
+            break
+        
+        # Get all neighbors of the current node
+        neighbors = get_neighbor(current_node)
+        
+        for neighbor, direction in neighbors:
+            if neighbor not in came_from:  # If neighbor hasn't been visited
+                queue.append(neighbor)
+                came_from[neighbor] = current_node
     
-    return path
+    # Reconstruct the path from target to start by following parent nodes
+    path_list = []
+    current_node = random_target
+    while current_node is not None:
+        path_list.append(current_node)
+        current_node = came_from[current_node]
+    
+    path_list.reverse()  # Reverse to get path from start to target
+    return path_list
+
 
 
 
@@ -220,19 +235,4 @@ for y in range(mapsize[0]):
 #if n: print(n.x,n.y)
 #create edges ---------------
 
-for n in range(len(nodes)):
-    #print("Pre-edit: ",n,nodes[n])
-    node=nodes[n]
-    for direction in "udlr":
-        if node.edges[direction] == None:
-            next_node = find_next_node(node,direction)
-            #print(next_node)
-            if next_node:
-                new_edge = edge(node,next_node)
-                edges.append(new_edge)
-                node.edges[direction] = new_edge
-                next_node.edges[inverse_directions[direction]] = new_edge
-            else:
-                node.edges[direction] = False
-        
-    #print(node)
+[print(n) for n in path(nodes[0])]
