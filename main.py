@@ -2,23 +2,25 @@ import random, pickle
 
 edges = []
 nodes = []
-mutiplier = 15
+mutiplier = 5
 crashes = 0
+successes = 0
 tot_cars = [0]
-spawn_chance = 3
-MAX_CARS_IN_INTERSECTION = 4  # New constant for intersection capacity
-
+spawn_chance = 2
 
     
 mapsize = [15,15]
 car_breaking_range = (0.15,0.3)
 crash_dist = 0.01
 traffic_light_range = .4
-max_time_in_intersection = 5
+max_time_in_intersection = 10
 inverse_directions = {"u":"d","d":"u","l":"r","r":"l"}
 
 def get_crashes():
     return crashes
+
+def get_successes():
+    return successes
 
 def node_by_pos(x,y):
     for n in nodes:
@@ -53,6 +55,7 @@ def find_next_node(node, d):
     return False
         
 def transition(current_loc, car):
+    global successes
     if type(current_loc).__name__ == 'node':
         # Find the next node in the car's path
         try:
@@ -60,6 +63,7 @@ def transition(current_loc, car):
             if current_idx >= len(car.path) - 1:
                 # Path is complete, remove car
                 remove_item(current_loc.cars_in_intersection, car)
+                successes += 1
                 return
                 
             d_node = car.path[current_idx + 1]
@@ -161,11 +165,11 @@ def c_path(start):
 
 
 class node():
-    def __init__(self, pos):
-        self.lightud = False
+    def __init__(self,pos): #pos is a list or tuple of length 2 (x,y)
+        self.lightud=False
         self.cars_in_intersection = []
-        self.edges = {"u":None, "d":None, "l":None, "r":None}
-        self.x, self.y = pos
+        self.edges={"u":None,"d":None,"l":None,"r":None}
+        self.x,self.y=pos
         
     def move_car(self):
         pass
@@ -176,86 +180,58 @@ class node():
     def is_corner(self):
         return mapsize[0] == self.x - 1 or 0 == self.x or mapsize[1] == self.y - 1 or 0 == self.y
     
-    def has_room(self):
-        return len(self.cars_in_intersection) < MAX_CARS_IN_INTERSECTION
-        
-    def get_target_edge(self, car):
-        # Helper function to determine which edge a car wants to move to
-        for j in range(len(car.path)-1):
-            if car.path[j] == self:
-                next_node = car.path[j+1]
-                if next_node.x - self.x > 0:
-                    return self.edges['r']
-                elif next_node.x - self.x < 0:
-                    return self.edges['l']
-                elif next_node.y - self.y < 0:
-                    return self.edges['u']
-                elif next_node.y - self.y > 0:
-                    return self.edges['d']
-        return None
-    
-    def edge_has_room(self, edge, car):
-        # Check if there's enough room on the target edge
-        if not edge:
-            return False
-            
-        # Find the current node's position in the car's path
-        try:
-            curr_idx = car.path.index(self)
-            next_node = car.path[curr_idx + 1]
-            
-            # Determine if we're entering from the P or N end of the edge
-            entering_from_P = (edge.nodeN == self)
-            
-            # If entering from P end, we want to check carsN (going towards P)
-            # If entering from N end, we want to check carsP (going towards N)
-            cars_list = edge.carsN if entering_from_P else edge.carsP
-            
-            # If no cars on the edge in our direction, it's safe
-            if not cars_list:
-                return True
-                
-            # Check the position of the car nearest to our entry point
-            if entering_from_P:
-                # We're entering from P end, check the last car going towards P
-                if cars_list:  # Check if there are any cars
-                    nearest_car = cars_list[-1]
-                    return nearest_car.position < edge.length - car.brake_dist
-            else:
-                # We're entering from N end, check the first car going towards N
-                if cars_list:  # Check if there are any cars
-                    nearest_car = cars_list[0]
-                    return nearest_car.position > car.brake_dist
-                    
-            return True  # If we get here, there are no cars in our way
-            
-        except (ValueError, IndexError):
-            # If we can't find the current node in path or next node doesn't exist
-            return False
-    
     def ctick(self):
         # Process cars in intersection
         i = 0
         while i < len(self.cars_in_intersection):
             car = self.cars_in_intersection[i]
             
-            target_edge = self.get_target_edge(car)
+            # Find the next edge the car will move to
+            for j in range(len(car.path)-1):
+                listOfCars = []
+                if car.path[j] == self:
+                    next_node = car.path[j+1]
+                    
+                    # Determine which edge we're heading to
+                    if next_node.x - self.x > 0:
+                        target_edge = self.edges['r']
+                        listOfCars = target_edge.carsP
+                    elif next_node.x - self.x < 0:
+                        target_edge = self.edges['l']
+                        listOfCars = target_edge.carsN
+                    elif next_node.y - self.y < 0:
+                        target_edge = self.edges['u']
+                        listOfCars = target_edge.carsN
+                    elif next_node.y - self.y > 0:
+                        target_edge = self.edges['d']
+                        listOfCars = target_edge.carsP
+                    
+                    # Adjust speed towards target edge's speed limit
+                    target_speed = target_edge.speed_limit
+                    if car.speed < target_speed:
+                        car.speed = min(target_speed, car.speed + car.accel)
+                    elif car.speed > target_speed:
+                        car.speed = max(target_speed, car.speed - car.brake_accel)
+                    break
             
-            # Check if car has been in intersection long enough AND target edge has room
-            if car.time_in_intersection >= max_time_in_intersection and self.edge_has_room(target_edge, car):
+            # Increment time in intersection
+            car.time_in_intersection += 1
+            
+
+            #check if a car is in position 0
+            inPZero = False
+            for h in listOfCars:
+                if(h.position == 0):
+                    inPZero = True
+                    break
+
+            # If car has been in intersection for 10 ticks, move it to next road
+            if car.time_in_intersection >= max_time_in_intersection and not inPZero:
                 car.time_in_intersection = 0  # Reset timer
-                transition(self, car)  # Move car to next road
+                transition(self, car)  # This will move car to next road
                 # Don't increment i since we removed a car
             else:
-                car.time_in_intersection += 1
                 i += 1
-                
-        # Check for crashes if too many cars entered
-        if len(self.cars_in_intersection) > MAX_CARS_IN_INTERSECTION:
-            # Crash all cars in the intersection
-            while self.cars_in_intersection:
-                car = self.cars_in_intersection[0]
-                car.crash(self)
 
 class car():
     speed = 0
@@ -263,7 +239,7 @@ class car():
     ticked = False
     path = None
     accel = .005/60
-    brake_accel = 100
+    brake_accel = .01/60
     time_in_intersection = 0
     
     def __init__(self, start, next_node=None):
@@ -327,22 +303,21 @@ class car():
 
 class edge():
     ud = False
-    
     def get_length(self):
         self.length = ((self.nodeP.x-self.nodeN.x)**2+(self.nodeP.y-self.nodeN.y)**2)**0.5
-        
-    def __init__(self, nodeP, nodeN):
-        self.nodeP, self.nodeN = nodeP, nodeN
-        self.carsP, self.carsN = [], []
-        self.speed_limit = 0.2/60
+    def __init__(self, nodeP, nodeN): #carsp = cars going in positive direction; carsn = cars going in negative direction
+        self.nodeP,self.nodeN=nodeP,nodeN
+        self.carsP,self.carsN=[],[]
+        self.speed_limit = .2/60
         self.get_length()
         self.ud = bool(abs(nodeP.y-nodeN.y))
     
+    
     def ctick(self):
         # Process both directions: positive and negative
-        for cars, target_node in [(self.carsP, self.nodeN), (self.carsN, self.nodeP)]:
-            i = 0
-            while i < len(cars):
+        for cars, node in [(self.carsP, self.nodeN), (self.carsN, self.nodeP)]:
+            i=0
+            while i<len(cars):
                 current_car = cars[i]
                 should_brake = False
                 
@@ -361,28 +336,22 @@ class edge():
                     if between <= current_car.brake_dist:
                         should_brake = True
                 
-                # Check intersection capacity and traffic light
-                approaching_intersection = (self.length - current_car.position) <= traffic_light_range
-                if approaching_intersection:
-                    if (target_node.lightud ^ self.ud) or not target_node.has_room():
-                        should_brake = True
-                
+                # Check stoplight
+                if ((node.lightud ^ self.ud) or len(node.cars_in_intersection) > 0) and (self.length-current_car.position)<=traffic_light_range:  # If light is red
+                    should_brake = True
+                #print(self.length-current_car.position, node.lightud, self.ud, should_brake)
+
                 # Apply acceleration/deceleration
                 if should_brake:
                     current_car.speed = max(0, current_car.speed - current_car.brake_accel)
                 else:
                     current_car.speed = min(self.speed_limit, current_car.speed + current_car.accel)
                 current_car.position += current_car.speed
+                #print(current_car)
                 
-                # Only transition to intersection if there's room
-                if current_car.position >= self.length:
-                    if target_node.has_room():
-                        transition(self, current_car)
-                    else:
-                        # Force the car to stop at intersection boundary
-                        current_car.position = self.length
-                        current_car.speed = 0
-                i += 1
+                if current_car.position>=self.length:
+                    transition(self, current_car)
+                i+=1    
 
 #spawn cars
 def spawn_car():

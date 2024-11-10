@@ -43,7 +43,7 @@ carWidth = 5
 time_elapsed_since_last_action = 0
 
 
-#amount of crashes
+#amount of crashes/successes
 pygame.font.init()
 my_font = pygame.font.SysFont('Arial Rounded MT Bold', 70)
 #number of cars in node
@@ -58,8 +58,9 @@ while running:
             running = False
 
 
-    #update crashes
+    #update crashes/successes
     text_surface = my_font.render('crashes: ' + str(int(get_crashes()/2)), False, (11, 15, 106))
+    text_surface_s = my_font.render('successes: ' + str(get_successes()), False, (11, 15, 106))
 
 
     # Clear the screen
@@ -174,13 +175,14 @@ while running:
         pygame.draw.circle(screen, node_color, node_pos, node_rad)
         #counter
         t_surface = node_font.render(str(len(n.cars_in_intersection)), False, (11, 15, 106))
-        screen.blit(t_surface, (node_pos.x-node_rad,node_pos.y-node_rad))
+        screen.blit(t_surface, (node_pos.x-.5*node_rad,node_pos.y-1.5*node_rad))
 
 
 
     #draw crashes text
     screen.blit(text_surface, (0,0))
-
+    screen.blit(text_surface_s, (0,50))
+    
     # Update the display
     pygame.display.flip()
 
