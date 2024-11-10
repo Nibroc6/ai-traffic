@@ -46,7 +46,7 @@ carWidth = 5
 
 time_elapsed_since_last_action = 0
 while running:
-
+    tick_all()
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
     for event in pygame.event.get():
@@ -62,7 +62,6 @@ while running:
     #loop through nodes
     #put a cirlce at node position
     for n in nodes:
-        n.ctick()
         node_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * n.x) + node_rad, ((screen.get_height() / mapsize[1]) * n.y) + node_rad)
         if n.lightud:
             node_color = "green"
@@ -76,7 +75,6 @@ while running:
             e = n.edges["u"]
 
             #calling backend tick moving car shit
-            e.ctick()
 
 
             a = e.nodeP
@@ -104,7 +102,6 @@ while running:
             e = n.edges["d"]
 
             #calling backend tick moving car shit
-            e.ctick()
 
 
             a = e.nodeP
@@ -133,7 +130,6 @@ while running:
             e = n.edges["l"]
 
             #calling backend tick moving car shit
-            e.ctick()
 
 
             a = e.nodeP
@@ -164,7 +160,6 @@ while running:
 
 
             #calling backend tick moving car shit
-            e.ctick()
 
 
             a = e.nodeP
