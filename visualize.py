@@ -179,7 +179,7 @@ while running:
     dt = clock.tick(240) / 1000
     #change the lights
     time_elapsed_since_last_action += dt
-    if time_elapsed_since_last_action > 5:
+    if time_elapsed_since_last_action > .5:
         for n in nodes:
             n.lightud = not n.lightud
         time_elapsed_since_last_action = 0
