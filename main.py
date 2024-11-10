@@ -5,7 +5,7 @@ nodes = []
 mutiplier = 5
 crashes = 0
 tot_cars = [0]
-spawn_chance = 3
+spawn_chance = 2
 
     
 mapsize = [15,15]
@@ -182,17 +182,23 @@ class node():
             
             # Find the next edge the car will move to
             for j in range(len(car.path)-1):
+                listOfCars = []
                 if car.path[j] == self:
                     next_node = car.path[j+1]
+                    
                     # Determine which edge we're heading to
                     if next_node.x - self.x > 0:
                         target_edge = self.edges['r']
+                        listOfCars = target_edge.carsP
                     elif next_node.x - self.x < 0:
                         target_edge = self.edges['l']
+                        listOfCars = target_edge.carsN
                     elif next_node.y - self.y < 0:
                         target_edge = self.edges['u']
+                        listOfCars = target_edge.carsN
                     elif next_node.y - self.y > 0:
                         target_edge = self.edges['d']
+                        listOfCars = target_edge.carsP
                     
                     # Adjust speed towards target edge's speed limit
                     target_speed = target_edge.speed_limit
@@ -205,8 +211,16 @@ class node():
             # Increment time in intersection
             car.time_in_intersection += 1
             
+
+            #check if a car is in position 0
+            inPZero = False
+            for h in listOfCars:
+                if(h.position == 0):
+                    inPZero = True
+                    break
+
             # If car has been in intersection for 10 ticks, move it to next road
-            if car.time_in_intersection >= max_time_in_intersection:
+            if car.time_in_intersection >= max_time_in_intersection and not inPZero:
                 car.time_in_intersection = 0  # Reset timer
                 transition(self, car)  # This will move car to next road
                 # Don't increment i since we removed a car
@@ -317,7 +331,7 @@ class edge():
                         should_brake = True
                 
                 # Check stoplight
-                if (node.lightud ^ self.ud) and (self.length-current_car.position)<=traffic_light_range:  # If light is red
+                if ((node.lightud ^ self.ud) or len(node.cars_in_intersection) > 0) and (self.length-current_car.position)<=traffic_light_range:  # If light is red
                     should_brake = True
                 #print(self.length-current_car.position, node.lightud, self.ud, should_brake)
 
