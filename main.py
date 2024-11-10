@@ -4,16 +4,10 @@ edges = []
 nodes = []
 mutiplier = 5
 crashes = 0
+successes = 0
 tot_cars = [0]
-spawn_chance = 3
+spawn_chance = 2
 
-goals_reached = 0
-
-with open(r"edges.obj", "wb") as node_file:
-    pickle.dump(nodes, node_file)
-
-with open(r"nodes.obj", "wb") as edge_file:
-    pickle.dump(nodes, edge_file)
     
 mapsize = [15,15]
 car_breaking_range = (0.15,0.3)
@@ -36,11 +30,11 @@ def set_crashes(value):
     crashes = value
 
 def set_goals_reached(value):
-    global goals_reached
+    global successes
     # Ensure goals reached cannot be less than 0
     if value < 0:
         value = 0
-    goals_reached = value
+    successes = value
 
 
 def node_by_pos(x,y):
@@ -76,6 +70,7 @@ def find_next_node(node, d):
     return False
         
 def transition(current_loc, car):
+    global successes
     if type(current_loc).__name__ == 'node':
         # Find the next node in the car's path
         try:
@@ -83,8 +78,7 @@ def transition(current_loc, car):
             if current_idx >= len(car.path) - 1:
                 # Path is complete, remove car
                 remove_item(current_loc.cars_in_intersection, car)
-                global goals_reached
-                goals_reached += 1
+                successes += 1
                 return
                 
             d_node = car.path[current_idx + 1]
@@ -209,17 +203,23 @@ class node():
             
             # Find the next edge the car will move to
             for j in range(len(car.path)-1):
+                listOfCars = []
                 if car.path[j] == self:
                     next_node = car.path[j+1]
+                    
                     # Determine which edge we're heading to
                     if next_node.x - self.x > 0:
                         target_edge = self.edges['r']
+                        listOfCars = target_edge.carsP
                     elif next_node.x - self.x < 0:
                         target_edge = self.edges['l']
+                        listOfCars = target_edge.carsN
                     elif next_node.y - self.y < 0:
                         target_edge = self.edges['u']
+                        listOfCars = target_edge.carsN
                     elif next_node.y - self.y > 0:
                         target_edge = self.edges['d']
+                        listOfCars = target_edge.carsP
                     
                     # Adjust speed towards target edge's speed limit
                     target_speed = target_edge.speed_limit
@@ -232,8 +232,16 @@ class node():
             # Increment time in intersection
             car.time_in_intersection += 1
             
+
+            #check if a car is in position 0
+            inPZero = False
+            for h in listOfCars:
+                if(h.position == 0):
+                    inPZero = True
+                    break
+
             # If car has been in intersection for 10 ticks, move it to next road
-            if car.time_in_intersection >= max_time_in_intersection:
+            if car.time_in_intersection >= max_time_in_intersection and not inPZero:
                 car.time_in_intersection = 0  # Reset timer
                 transition(self, car)  # This will move car to next road
                 # Don't increment i since we removed a car
@@ -246,7 +254,7 @@ class car():
     ticked = False
     path = None
     accel = .005/60
-    brake_accel = 100
+    brake_accel = .01/60
     time_in_intersection = 0
     
     def __init__(self, start, next_node=None):
@@ -312,7 +320,7 @@ class edge():
     def __init__(self, nodeP, nodeN): #carsp = cars going in positive direction; carsn = cars going in negative direction
         self.nodeP,self.nodeN=nodeP,nodeN
         self.carsP,self.carsN=[],[]
-        self.speed_limit = 0.2/60
+        self.speed_limit = .2/60
         self.get_length()
         self.ud = bool(abs(nodeP.y-nodeN.y))
     
@@ -341,7 +349,7 @@ class edge():
                         should_brake = True
                 
                 # Check stoplight
-                if (node.lightud ^ self.ud) and (self.length-current_car.position)<=traffic_light_range:  # If light is red
+                if ((node.lightud ^ self.ud) or len(node.cars_in_intersection) > 0) and (self.length-current_car.position)<=traffic_light_range:  # If light is red
                     should_brake = True
                 #print(self.length-current_car.position, node.lightud, self.ud, should_brake)
 
@@ -365,10 +373,24 @@ def spawn_car():
     temp.cars_in_intersection.append(car(temp))
     
 #create nodes ---------------
+"""
 for y in range(mapsize[0]):
+    tf_grid.append([])
     for x in range(mapsize[1]):
         if random.randint(0,1):
-            nodes.append(node([x,y]))
+            tf_grid[-1].append(True)
+            #nodes.append(node([x,y]))
+        else:
+            tf_grid[-1].append(False)
+"""
+with open('tf_grid.pkl', 'rb') as f:
+    tf_grid = pickle.load(f)
+
+for line in range(len(tf_grid)):
+    for point in range(len(tf_grid[line])):
+        if tf_grid[line][point]:
+            nodes.append(node([point,line]))
+            
 #print(nodes)
 #print(nodes[0].x,nodes[0].y,n:=next_node(nodes[0],"d"))
 #if n: print(n.x,n.y)
@@ -391,6 +413,7 @@ for n in range(len(nodes)):
     #print(node)
 for n in nodes: 
     n.lightud = bool(random.randint(0,1))
+
 
 
 [print(n) for n in c_path(nodes[0])]

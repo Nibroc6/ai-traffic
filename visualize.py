@@ -11,7 +11,7 @@ dt = 0
 
 # Background image
 bgOriginal = pygame.image.load("grass.png")
-bg = pygame.transform.scale(bgOriginal, (160, 160))
+bg = pygame.transform.scale(bgOriginal, (80, 80))
 
 # Create initial cars on edges
 #for e in edges:
@@ -43,9 +43,11 @@ carWidth = 5
 time_elapsed_since_last_action = 0
 
 
-#amount of crashes
+#amount of crashes/successes
 pygame.font.init()
 my_font = pygame.font.SysFont('Arial Rounded MT Bold', 70)
+#number of cars in node
+node_font = pygame.font.SysFont('Comic Sans', 10)
 
 
 while running:
@@ -56,8 +58,9 @@ while running:
             running = False
 
 
-    #update crashes
+    #update crashes/successes
     text_surface = my_font.render('crashes: ' + str(int(get_crashes()/2)), False, (11, 15, 106))
+    text_surface_s = my_font.render('successes: ' + str(get_successes()), False, (11, 15, 106))
 
 
     # Clear the screen
@@ -76,6 +79,9 @@ while running:
             ((screen.get_width() / mapsize[0]) * n.x) + node_rad * 5,
             ((screen.get_height() / mapsize[1]) * n.y) + node_rad * 5
         )
+        
+
+
 
         # Yellow line offset and width
         offset = int(road_width / 8)
@@ -167,11 +173,16 @@ while running:
         )
         node_color = "green" if n.lightud else "red"
         pygame.draw.circle(screen, node_color, node_pos, node_rad)
+        #counter
+        t_surface = node_font.render(str(len(n.cars_in_intersection)), False, (11, 15, 106))
+        screen.blit(t_surface, (node_pos.x-.5*node_rad,node_pos.y-1.5*node_rad))
+
 
 
     #draw crashes text
     screen.blit(text_surface, (0,0))
-
+    screen.blit(text_surface_s, (0,50))
+    
     # Update the display
     pygame.display.flip()
 
@@ -179,7 +190,7 @@ while running:
     dt = clock.tick(240) / 1000
     #change the lights
     time_elapsed_since_last_action += dt
-    if time_elapsed_since_last_action > 5:
+    if time_elapsed_since_last_action > 3:
         for n in nodes:
             n.lightud = not n.lightud
         time_elapsed_since_last_action = 0
