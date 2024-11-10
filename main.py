@@ -7,6 +7,7 @@ crashes = 0
 successes = 0
 tot_cars = [0]
 spawn_chance = 2
+MAX_CARS_IN_INTERSECTION = 1
 
     
 mapsize = [15,15]
