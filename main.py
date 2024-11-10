@@ -2,10 +2,10 @@ import random, pickle
 
 edges = []
 nodes = []
-cars = []
-mutiplier = 100
+mutiplier = 5
 crashes = 0
-spawn_chance = 1
+tot_cars = [0]
+spawn_chance = 1000
 
 with open(r"edges.obj", "wb") as node_file:
     pickle.dump(nodes, node_file)
@@ -13,11 +13,11 @@ with open(r"edges.obj", "wb") as node_file:
 with open(r"nodes.obj", "wb") as edge_file:
     pickle.dump(nodes, edge_file)
     
-mapsize = [20,20]
+mapsize = [15,15]
 car_breaking_range = (0.15,0.3)
 crash_dist = 0.01
 traffic_light_range = .4
-max_time_in_intersection = 5
+max_time_in_intersection = 10
 inverse_directions = {"u":"d","d":"u","l":"r","r":"l"}
 
 
@@ -267,9 +267,9 @@ class car():
     #    return str([self for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__")])
         
     def crash(self,container):
-        global crashes
+        global crashes, tot_cars
         crashes += 1
-        print(f"Car {self} crashed ({crashes} crashes so far)")
+        print(f"Car {self} crashed ({crashes}/{tot_cars[0]} crashes so far)")
         try:    
             container.carsN.remove(self)
         except:
@@ -342,7 +342,6 @@ def spawn_car():
     while not temp.is_corner() and not len(temp.cars_in_intersection) == 0:
         temp = random.choice(nodes)
     temp.cars_in_intersection.append(car(temp))
-    print("i like sucking dick")
     
 #create nodes ---------------
 for y in range(mapsize[0]):
