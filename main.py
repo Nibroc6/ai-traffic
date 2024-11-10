@@ -5,7 +5,7 @@ nodes = []
 mutiplier = 5
 crashes = 0
 tot_cars = [0]
-spawn_chance = 1000
+spawn_chance = 3
 
 with open(r"edges.obj", "wb") as node_file:
     pickle.dump(nodes, node_file)
@@ -125,7 +125,7 @@ def get_neighbor (node):
     return result
 
 
-def path(start):
+def c_path(start):
     # First, create a random target node (select a node other than the start node)
     random_target = None
     while random_target is None or random_target == start:
@@ -229,7 +229,7 @@ class car():
     def __init__(self, start, next_node=None):
         self.brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
         self.path = [start]
-        
+        path = c_path(start)
         if next_node:
             # If we're given a next node, make sure it's in the path
             self.path.append(next_node)
@@ -253,11 +253,11 @@ class car():
                 if next_choice not in self.path:  # Avoid loops
                     self.path.append(next_choice)
     #def __init__(self, start):
-    #    path = path(start)
+    #    path = c_path(start)
     #    brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
     """
     def __init__(self, start):
-        d_path = path(start)
+        d_path = c_path(start)
         brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
     
     def __init__(self):
@@ -372,7 +372,7 @@ for n in nodes:
     n.lightud = bool(random.randint(0,1))
 
 
-[print(n) for n in path(nodes[0])]
+[print(n) for n in c_path(nodes[0])]
 def tick_all():
     if not random.randint(0, spawn_chance):
         spawn_car()
