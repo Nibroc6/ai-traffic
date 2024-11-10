@@ -20,7 +20,8 @@ traffic_light_range = .4
 max_time_in_intersection = 10
 inverse_directions = {"u":"d","d":"u","l":"r","r":"l"}
 
-
+def get_crashes():
+    return crashes
 
 def node_by_pos(x,y):
     for n in nodes:
@@ -227,6 +228,7 @@ class car():
     time_in_intersection = 0
     
     def __init__(self, start, next_node=None):
+        self.Color = tuple([random.randint(0, 255),random.randint(0, 255),random.randint(0, 255)])
         self.brake_dist = random.randint(int(car_breaking_range[0]*100),int(car_breaking_range[1]*100)+1)/100
         self.path = [start]
         path = c_path(start)
@@ -346,7 +348,7 @@ def spawn_car():
 #create nodes ---------------
 for y in range(mapsize[0]):
     for x in range(mapsize[1]):
-        if random.randint(0,2):
+        if random.randint(0,1):
             nodes.append(node([x,y]))
 #print(nodes)
 #print(nodes[0].x,nodes[0].y,n:=next_node(nodes[0],"d"))
