@@ -19,8 +19,8 @@ inverse_directions = {"u":"d","d":"u","l":"r","r":"l"}
 def get_crashes():
     return crashes
 
-def get_goals_reached():
-    return goals_reached
+def get_successes():
+    return successes
 
 def set_crashes(value):
     global crashes
