@@ -22,7 +22,7 @@ class TrafficEnv(Env):
     def __init__(self):
         super().__init__()
         self.num_nodes = len(nodes)
-        self.action_space = Discrete(self.num_nodes * 2)
+        self.action_space = MultiBinary(self.num_nodes)
         
         self.observation_space = Dict({
             "Cars_Entering": Box(low=0, high=1, shape=(self.num_nodes, 2), dtype=np.float32),
@@ -72,13 +72,16 @@ class TrafficEnv(Env):
     
     def step(self, action):
         new_crash_count = get_crashes()
-        new_goals_reached = get_goals_reached()
+        new_goals_reached = get_successes()
         
-        node_idx, light_state = self._decode_action(action)
-        nodes[node_idx].lightud = light_state
+        #node_idx, light_state = self._decode_action(action)
+        #nodes[node_idx].lightud = light_state
         
         tick_all()
-        
+
+        for i in range(len(nodes)):
+            nodes[i].lightud = bool(action[i])
+                
         new_crashes = new_crash_count - self.crash_count
         new_goals = new_goals_reached - self.goals_reached
         
@@ -96,12 +99,13 @@ class TrafficEnv(Env):
             'goals': self.goals_reached,
             'crashes': self.crash_count
         }
-
-    def _decode_action(self, action):
-        node_idx = action // 2
-        light_state = bool(action % 2)
-        return node_idx, light_state
-
+        '''
+            def _decode_action(self, action):
+                print("to decode", action)
+                node_idx = action // 2
+                light_state = bool(action % 2)
+                return node_idx, light_state
+        '''
 
     def _get_observation(self):
         cars_entering = np.zeros((self.num_nodes, 2), dtype=np.float32)
@@ -173,9 +177,15 @@ class DQNAgent:
 
     def act(self, state, training=True):
         if training and random.random() < self.epsilon:
-            return random.randrange(self.action_size)
+            # If exploring, return a random binary vector (size equal to number of nodes)
+            return np.random.randint(2, size=self.action_size)  # Random 0s and 1s vector of length `self.action_size`
+        
+        # Predict the action values using the model
         act_values = self.model.predict(state, verbose=0)
-        return np.argmax(act_values[0])
+
+        # Convert the predicted values to a binary vector (0 or 1) for each node
+        return np.round(act_values[0])  # Round to 0 or 1 for each node
+
 
     def replay(self, batch_size):
         if len(self.memory) < batch_size:
@@ -183,7 +193,7 @@ class DQNAgent:
         
         minibatch = random.sample(self.memory, batch_size)
         states = np.array([i[0] for i in minibatch])
-        actions = np.array([i[1] for i in minibatch])
+        actions = np.array([i[1] for i in minibatch])  # Actions are binary vectors
         rewards = np.array([i[2] for i in minibatch])
         next_states = np.array([i[3] for i in minibatch])
         dones = np.array([i[4] for i in minibatch])
@@ -195,15 +205,24 @@ class DQNAgent:
         target_next = self.target_model.predict(next_states, verbose=0)
 
         for i in range(batch_size):
+            # Convert the binary action vector to an index (the node where the light is turned on)
+            action_idx = np.argmax(actions[i])  # Get the index where action is 1 (light turned on)
+            
             if dones[i]:
-                targets[i][actions[i]] = rewards[i]
+                # If done, directly assign reward to that action's Q-value
+                targets[i][action_idx] = rewards[i]
             else:
-                targets[i][actions[i]] = rewards[i] + self.gamma * np.amax(target_next[i])
+                # Otherwise, apply the Bellman equation
+                targets[i][action_idx] = rewards[i] + self.gamma * np.amax(target_next[i])
 
+        # Fit the model using the updated Q-values
         self.model.fit(states, targets, epochs=1, verbose=0, batch_size=batch_size)
-        
+
+        # Decay epsilon after each episode
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
+
+
 
     def update_target_model(self):
         self.target_model.set_weights(self.model.get_weights())
