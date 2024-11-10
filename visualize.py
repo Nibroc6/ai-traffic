@@ -174,7 +174,7 @@ while running:
         pygame.draw.circle(screen, node_color, node_pos, node_rad)
         #counter
         t_surface = node_font.render(str(len(n.cars_in_intersection)), False, (11, 15, 106))
-        screen.blit(t_surface, (node_pos.x-node_rad,node_pos.y-node_rad))
+        screen.blit(t_surface, (node_pos.x-.5*node_rad,node_pos.y-1.5*node_rad))
 
 
 
