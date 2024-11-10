@@ -1,14 +1,14 @@
 import pygame
 import numpy as np
 from tensorflow import keras
-import random
 from main import *
+import time
 
 class ModelVisualizer:
     def __init__(self):
         # Load the trained model
         try:
-            self.model = keras.models.load_model('generic_model.keras')
+            self.model = keras.models.load_model('generic_model (1).keras')
             print("Successfully loaded trained model")
             print(f"Expected input shape: {self.model.input_shape}")
             self.using_model = True
@@ -21,7 +21,6 @@ class ModelVisualizer:
         self.screen = pygame.display.set_mode((800, 800))
         self.clock = pygame.time.Clock()
         self.running = True
-        self.dt = 0
         
         # Load and scale background
         self.bgOriginal = pygame.image.load("grass.png")
@@ -43,7 +42,7 @@ class ModelVisualizer:
         self.time_elapsed_since_last_action = 0
         self.update_interval = 3  # Seconds between light changes
         
-        # Number of nodes (for observation space)
+        # Number of nodes
         self.num_nodes = len(nodes)
     
     def _get_model_observation(self):
@@ -59,45 +58,95 @@ class ModelVisualizer:
         
         # Generate observations for each node
         for i, node in enumerate(nodes):
-            # Light states
+            # Light states (unchanged)
             observation["Light_States"][i] = [float(node.lightud), float(not node.lightud)]
             
-            # Get relevant edges
-            edges_ud = [e for e in edges if (e.nodeP == node or e.nodeN == node) and 
-                       (node.edges['d'] in [e.nodeN, e.nodeP] or node.edges['u'] in [e.nodeN, e.nodeP])]
-            edges_lr = [e for e in edges if (e.nodeP == node or e.nodeN == node) and 
-                       (node.edges['l'] in [e.nodeN, e.nodeP] or node.edges['r'] in [e.nodeN, e.nodeP])]
+            # Calculate cars and speeds for vertical traffic (up/down)
+            edges_ud = []
+            if node.edges['u'] and isinstance(node.edges['u'], edge):
+                edges_ud.append(node.edges['u'])
+            if node.edges['d'] and isinstance(node.edges['d'], edge):
+                edges_ud.append(node.edges['d'])
+                
+            # Calculate cars and speeds for horizontal traffic (left/right)
+            edges_lr = []
+            if node.edges['l'] and isinstance(node.edges['l'], edge):
+                edges_lr.append(node.edges['l'])
+            if node.edges['r'] and isinstance(node.edges['r'], edge):
+                edges_lr.append(node.edges['r'])
             
+            # Process vertical edges
             if edges_ud:
-                cars_ud = sum(len(e.carsP) + len(e.carsN) for e in edges_ud)
-                observation["Cars_Entering"][i][0] = min(cars_ud / (len(edges_ud) * 10), 1.0)
+                cars_entering_ud = 0
+                cars_exiting_ud = 0
+                speed_entering_ud = 0
+                speed_exiting_ud = 0
+                total_cars_ud = 0
+                
+                for e in edges_ud:
+                    # Count cars approaching the intersection
+                    if e.nodeN == node:
+                        cars_entering_ud += len(e.carsP)
+                        speed_entering_ud += sum(c.speed for c in e.carsP)
+                    if e.nodeP == node:
+                        cars_entering_ud += len(e.carsN)
+                        speed_entering_ud += sum(c.speed for c in e.carsN)
+                    total_cars_ud += len(e.carsP) + len(e.carsN)
+                
+                observation["Cars_Entering"][i][0] = min(cars_entering_ud / (len(edges_ud) * 10), 1.0)
+                observation["Cars_Exiting"][i][0] = min(cars_exiting_ud / (len(edges_ud) * 10), 1.0)
+                observation["Speed_Entering"][i][0] = min(speed_entering_ud / (total_cars_ud + 1), 1.0)
+                observation["Average_Speed_Exiting"][i][0] = min(speed_exiting_ud / (total_cars_ud + 1), 1.0)
             
+            # Process horizontal edges
             if edges_lr:
-                cars_lr = sum(len(e.carsP) + len(e.carsN) for e in edges_lr)
-                observation["Cars_Entering"][i][1] = min(cars_lr / (len(edges_lr) * 10), 1.0)
+                cars_entering_lr = 0
+                cars_exiting_lr = 0
+                speed_entering_lr = 0
+                speed_exiting_lr = 0
+                total_cars_lr = 0
+                
+                for e in edges_lr:
+                    # Count cars approaching the intersection
+                    if e.nodeN == node:
+                        cars_entering_lr += len(e.carsP)
+                        speed_entering_lr += sum(c.speed for c in e.carsP)
+                    if e.nodeP == node:
+                        cars_entering_lr += len(e.carsN)
+                        speed_entering_lr += sum(c.speed for c in e.carsN)
+                    total_cars_lr += len(e.carsP) + len(e.carsN)
+                
+                observation["Cars_Entering"][i][1] = min(cars_entering_lr / (len(edges_lr) * 10), 1.0)
+                observation["Cars_Exiting"][i][1] = min(cars_exiting_lr / (len(edges_lr) * 10), 1.0)
+                observation["Speed_Entering"][i][1] = min(speed_entering_lr / (total_cars_lr + 1), 1.0)
+                observation["Average_Speed_Exiting"][i][1] = min(speed_exiting_lr / (total_cars_lr + 1), 1.0)
         
-        # Flatten the observation to match the model's input shape
+        # Flatten and concatenate all observation values
         flat_observation = np.concatenate([arr.flatten() for arr in observation.values()])
         
-        # Pad or truncate to match expected input size (1090)
-        expected_size = 1090  # From model.input_shape[1]
-        if len(flat_observation) < expected_size:
-            flat_observation = np.pad(flat_observation, (0, expected_size - len(flat_observation)))
-        elif len(flat_observation) > expected_size:
-            flat_observation = flat_observation[:expected_size]
-            
-        return np.reshape(flat_observation, [1, expected_size])
+        # Debug print to verify observation changes
+        print(f"Observation shape: {flat_observation.shape}")
+        print(f"Non-zero elements: {np.count_nonzero(flat_observation)}")
+        
+        return np.reshape(flat_observation, [1, -1])
     
     def update_traffic_lights(self):
         if self.using_model:
             try:
-                state = self._get_model_observation()
-                prediction = self.model.predict(state, verbose=0)
+                observation = self._get_model_observation()
+                prediction = self.model.predict(observation, verbose=0)
+                print(prediction)
                 action = np.argmax(prediction[0])
                 
-                # Decode action
+                # Debug prints
+                print(f"Model prediction shape: {prediction.shape}")
+                print(f"Selected action: {action}")
+                
+                # Decode action (same as in training environment)
                 node_idx = action // 2
                 light_state = bool(action % 2)
+                
+                print(f"Updating node {node_idx} to state {light_state}")
                 
                 # Update specific node's light
                 if 0 <= node_idx < len(nodes):
@@ -111,7 +160,7 @@ class ModelVisualizer:
             # Random light changes for all nodes
             for n in nodes:
                 n.lightud = not n.lightud
-
+    
     def draw_roads_and_cars(self):
         for n in nodes:
             n.ctick()
@@ -232,7 +281,6 @@ class ModelVisualizer:
                     self.running = False
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
-                        # Toggle between AI and random control
                         self.using_model = not self.using_model if self.model is not None else False
             
             # Update simulation
@@ -250,7 +298,7 @@ class ModelVisualizer:
             
             # Update display
             pygame.display.flip()
-            self.clock.tick(240)
+            self.clock.tick(60)
         
         pygame.quit()
 
