@@ -74,6 +74,10 @@ while running:
     for n in nodes:
         n.ctick()
         node_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * n.x) + node_rad, ((screen.get_height() / mapsize[1]) * n.y) + node_rad)
+        #yellow line offset
+        offset = int(road_width/5)
+        #yellow line width
+        yWidth = int(road_width/9)
         #go through 4 edges and go to their nodes. draw a line from n to that node
         if(n.edges["u"]):
             e = n.edges["u"]
@@ -84,27 +88,34 @@ while running:
 
             a = e.nodeP
             b = e.nodeN
-            #distance x
-            #two lists of cars
-            #render cars
-            for c in e.carsP:
-                origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * a.x) + node_rad, ((screen.get_height() / mapsize[1]) * a.y) + node_rad)
-                r = pygame.Rect(origin_pos[0]+(.5*road_width), origin_pos[1]+((screen.get_height() / mapsize[1])*c.position), carWidth, carHeight)
-                pygame.draw.rect(screen, "blue", r)
-            for c in e.carsN:
-                origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * b.x) + node_rad, ((screen.get_height() / mapsize[1]) * b.y) + node_rad)
-                r = pygame.Rect(origin_pos[0]-carWidth-(.5*road_width), origin_pos[1]-((screen.get_height() / mapsize[1])*c.position), carWidth, carHeight)
-                pygame.draw.rect(screen, "green", r)
 
             #render road
             if(a != n):
                 prev_node_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * a.x) + node_rad, ((screen.get_height() / mapsize[1]) * a.y) + node_rad)
                 pygame.draw.line(screen, "black", node_pos, prev_node_pos, width = road_width)
-
-                
             else:
                 prev_node_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * b.x) + node_rad, ((screen.get_height() / mapsize[1]) * b.y) + node_rad)
                 pygame.draw.line(screen, "black", node_pos, prev_node_pos, width = road_width)
+            #yellow line right side
+            lineStart = pygame.Vector2(prev_node_pos.x+offset, prev_node_pos.y)
+            lineEnd = pygame.Vector2(node_pos.x+offset, node_pos.y)
+            pygame.draw.line(screen, "yellow", lineStart, lineEnd, width = yWidth)
+            #yellow line left side
+            lineStart = pygame.Vector2(prev_node_pos.x-offset, prev_node_pos.y)
+            lineEnd = pygame.Vector2(node_pos.x-offset, node_pos.y)
+            pygame.draw.line(screen, "yellow", lineStart, lineEnd, width = yWidth)
+
+            #distance x
+            #two lists of cars
+            #render cars
+            for c in e.carsP:
+                origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * a.x) + node_rad, ((screen.get_height() / mapsize[1]) * a.y) + node_rad)
+                r = pygame.Rect(origin_pos[0]+offset, origin_pos[1]+((screen.get_height() / mapsize[1])*c.position), carWidth, carHeight)
+                pygame.draw.rect(screen, "blue", r)
+            for c in e.carsN:
+                origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * b.x) + node_rad, ((screen.get_height() / mapsize[1]) * b.y) + node_rad)
+                r = pygame.Rect(origin_pos[0]-carWidth-offset, origin_pos[1]-((screen.get_height() / mapsize[1])*c.position), carWidth, carHeight)
+                pygame.draw.rect(screen, "green", r)
         if(n.edges["d"]):
             e = n.edges["d"]
 
@@ -115,17 +126,7 @@ while running:
             a = e.nodeP
             b = e.nodeN
 
-            #distance x
-            #two lists of cars
-            #render cars
-            for c in e.carsP:
-                origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * a.x) + node_rad, ((screen.get_height() / mapsize[1]) * a.y) + node_rad)
-                r = pygame.Rect(origin_pos[0]+(.5*road_width), origin_pos[1]+((screen.get_height() / mapsize[1])*c.position), carWidth, carHeight)
-                pygame.draw.rect(screen, "blue", r)
-            for c in e.carsN:
-                origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * b.x) + node_rad, ((screen.get_height() / mapsize[1]) * b.y) + node_rad)
-                r = pygame.Rect(origin_pos[0]-carWidth-(.5*road_width), origin_pos[1]-((screen.get_height() / mapsize[1])*c.position), carWidth, carHeight)
-                pygame.draw.rect(screen, "green", r)
+            
 
 
             if(a != n):
@@ -134,6 +135,18 @@ while running:
             else:
                 prev_node_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * b.x) + node_rad, ((screen.get_height() / mapsize[1]) * b.y) + node_rad)
                 pygame.draw.line(screen, "black", node_pos, prev_node_pos, width = road_width)
+            
+            #distance x
+            #two lists of cars
+            #render cars
+            for c in e.carsP:
+                origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * a.x) + node_rad, ((screen.get_height() / mapsize[1]) * a.y) + node_rad)
+                r = pygame.Rect(origin_pos[0]+offset, origin_pos[1]+((screen.get_height() / mapsize[1])*c.position), carWidth, carHeight)
+                pygame.draw.rect(screen, "blue", r)
+            for c in e.carsN:
+                origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * b.x) + node_rad, ((screen.get_height() / mapsize[1]) * b.y) + node_rad)
+                r = pygame.Rect(origin_pos[0]-carWidth-offset, origin_pos[1]-((screen.get_height() / mapsize[1])*c.position), carWidth, carHeight)
+                pygame.draw.rect(screen, "green", r)
         if(n.edges["l"]):
             e = n.edges["l"]
 
@@ -144,19 +157,6 @@ while running:
             a = e.nodeP
             b = e.nodeN
 
-            #distance x
-            #two lists of cars
-            #render cars
-            for c in e.carsP:
-                origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * a.x) + node_rad, ((screen.get_height() / mapsize[1]) * a.y) + node_rad)
-                r = pygame.Rect(origin_pos[0]+((screen.get_width() / mapsize[1])*c.position), origin_pos[1]+(.5*road_width), carHeight, carWidth)
-                pygame.draw.rect(screen, "blue", r)
-            for c in e.carsN:
-                origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * b.x) + node_rad, ((screen.get_height() / mapsize[1]) * b.y) + node_rad)
-                r = pygame.Rect(origin_pos[0]-((screen.get_width() / mapsize[1])*c.position), origin_pos[1]-carWidth-(.5*road_width), carHeight, carWidth)
-                pygame.draw.rect(screen, "green", r)
-
-
 
             if(a != n):
                 prev_node_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * a.x) + node_rad, ((screen.get_height() / mapsize[1]) * a.y) + node_rad)
@@ -164,6 +164,25 @@ while running:
             else:
                 prev_node_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * b.x) + node_rad, ((screen.get_height() / mapsize[1]) * b.y) + node_rad)
                 pygame.draw.line(screen, "black", node_pos, prev_node_pos, width = road_width)
+            #yellow line right side
+            lineStart = pygame.Vector2(prev_node_pos.x+offset, prev_node_pos.y)
+            lineEnd = pygame.Vector2(node_pos.x+offset, node_pos.y)
+            pygame.draw.line(screen, "yellow", lineStart, lineEnd, width = yWidth)
+            #yellow line left side
+            lineStart = pygame.Vector2(prev_node_pos.x-offset, prev_node_pos.y)
+            lineEnd = pygame.Vector2(node_pos.x-offset, node_pos.y)
+            pygame.draw.line(screen, "yellow", lineStart, lineEnd, width = yWidth)
+        #distance x
+        #two lists of cars
+        #render cars
+        for c in e.carsP:
+            origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * a.x) + node_rad, ((screen.get_height() / mapsize[1]) * a.y) + node_rad)
+            r = pygame.Rect(origin_pos[0]+((screen.get_width() / mapsize[1])*c.position), origin_pos[1]+offset, carHeight, carWidth)
+            pygame.draw.rect(screen, "blue", r)
+        for c in e.carsN:
+            origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * b.x) + node_rad, ((screen.get_height() / mapsize[1]) * b.y) + node_rad)
+            r = pygame.Rect(origin_pos[0]-((screen.get_width() / mapsize[1])*c.position), origin_pos[1]-carWidth-offset, carHeight, carWidth)
+            pygame.draw.rect(screen, "green", r)
         if(n.edges["r"]):
             e = n.edges["r"]
 
@@ -175,27 +194,23 @@ while running:
             a = e.nodeP
             b = e.nodeN
 
-
-            #distance x
-            #two lists of cars
-            #render cars
-            for c in e.carsP:
-                origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * a.x) + node_rad, ((screen.get_height() / mapsize[1]) * a.y) + node_rad)
-                r = pygame.Rect(origin_pos[0]+((screen.get_width() / mapsize[1])*c.position), origin_pos[1]+(.5*road_width), carHeight, carWidth)
-                pygame.draw.rect(screen, "blue", r)
-            for c in e.carsN:
-                origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * b.x) + node_rad, ((screen.get_height() / mapsize[1]) * b.y) + node_rad)
-                r = pygame.Rect(origin_pos[0]-((screen.get_width() / mapsize[1])*c.position), origin_pos[1]-carWidth-(.5*road_width), carHeight, carWidth)
-                pygame.draw.rect(screen, "green", r)
-
-
             if(a != n):
                 prev_node_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * a.x) + node_rad, ((screen.get_height() / mapsize[1]) * a.y) + node_rad)
                 pygame.draw.line(screen, "black", node_pos, prev_node_pos, width = road_width)
             else:
                 prev_node_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * b.x) + node_rad, ((screen.get_height() / mapsize[1]) * b.y) + node_rad)
                 pygame.draw.line(screen, "black", node_pos, prev_node_pos, width = road_width)
-
+            #distance x
+            #two lists of cars
+            #render cars
+            for c in e.carsP:
+                origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * a.x) + node_rad, ((screen.get_height() / mapsize[1]) * a.y) + node_rad)
+                r = pygame.Rect(origin_pos[0]+((screen.get_width() / mapsize[1])*c.position), origin_pos[1]+offset, carHeight, carWidth)
+                pygame.draw.rect(screen, "blue", r)
+            for c in e.carsN:
+                origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * b.x) + node_rad, ((screen.get_height() / mapsize[1]) * b.y) + node_rad)
+                r = pygame.Rect(origin_pos[0]-((screen.get_width() / mapsize[1])*c.position), origin_pos[1]-carWidth-offset, carHeight, carWidth)
+                pygame.draw.rect(screen, "green", r)
     for n in nodes:
         node_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * n.x) + node_rad, ((screen.get_height() / mapsize[1]) * n.y) + node_rad)
         if n.lightud:
