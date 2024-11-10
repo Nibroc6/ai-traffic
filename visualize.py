@@ -41,7 +41,7 @@ else:
     node_rad = (screen.get_height() / mapsize[1])/10
 
 #road width
-road_width = 8
+road_width = 9
 
 #car width/height, I rly use these poorly so be warned if you try to use them
 carHeight = 10
@@ -74,13 +74,6 @@ while running:
     #put a cirlce at node position
     for n in nodes:
         node_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * n.x) + node_rad, ((screen.get_height() / mapsize[1]) * n.y) + node_rad)
-        if n.lightud:
-            node_color = "green"
-        else:
-            node_color = "red"
-        
-        
-        pygame.draw.circle(screen, node_color, node_pos, node_rad)
         #go through 4 edges and go to their nodes. draw a line from n to that node
         if(n.edges["u"]):
             e = n.edges["u"]
@@ -107,6 +100,8 @@ while running:
             if(a != n):
                 prev_node_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * a.x) + node_rad, ((screen.get_height() / mapsize[1]) * a.y) + node_rad)
                 pygame.draw.line(screen, "black", node_pos, prev_node_pos, width = road_width)
+
+                
             else:
                 prev_node_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * b.x) + node_rad, ((screen.get_height() / mapsize[1]) * b.y) + node_rad)
                 pygame.draw.line(screen, "black", node_pos, prev_node_pos, width = road_width)
@@ -200,6 +195,14 @@ while running:
             else:
                 prev_node_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * b.x) + node_rad, ((screen.get_height() / mapsize[1]) * b.y) + node_rad)
                 pygame.draw.line(screen, "black", node_pos, prev_node_pos, width = road_width)
+
+    for n in nodes:
+        node_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * n.x) + node_rad, ((screen.get_height() / mapsize[1]) * n.y) + node_rad)
+        if n.lightud:
+            node_color = "green"
+        else:
+            node_color = "red"
+        pygame.draw.circle(screen, node_color, node_pos, node_rad)
 
     # flip() the display to put your work on screen
     pygame.display.flip()
