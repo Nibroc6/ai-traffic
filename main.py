@@ -6,9 +6,15 @@ cars = []
 
 crashes = 0
 
+with open(r"edges.obj", "wb") as node_file:
+    pickle.dump(nodes, node_file)
+
+with open(r"nodes.obj", "wb") as edge_file:
+    pickle.dump(nodes, edge_file)
+    
 mapsize = [10,10]
 car_breaking_range = (0.15,0.3)
-crash_dist = 0.05
+crash_dist = 0.01
 traffic_light_range = .4
 max_time_in_intersection = 5
 inverse_directions = {"u":"d","d":"u","l":"r","r":"l"}
