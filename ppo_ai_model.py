@@ -80,7 +80,9 @@ class TrafficEnv(Env):
         tick_all()
 
         for i in range(len(nodes)):
-            nodes[i].lightud = bool(action[i])
+            if(nodes[i].secondPassed()):
+                nodes[i].lightud = bool(action[i])
+                nodes[i].lastTime = time.time()
                 
         new_crashes = new_crash_count - self.crash_count
         new_goals = new_goals_reached - self.goals_reached
