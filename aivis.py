@@ -3,14 +3,15 @@ import numpy as np
 from tensorflow import keras
 from main import *
 import time
-
+laststate=[]
 class ModelVisualizer:
     def __init__(self):
         # Load the trained model
         try:
-            self.model = keras.models.load_model('generic_model (1).keras')
+            self.model = keras.models.load_model('generic_model (3).keras')
             print("Successfully loaded trained model")
             print(f"Expected input shape: {self.model.input_shape}")
+            print(f"Output shape: {self.model.output_shape}")
             self.using_model = True
         except Exception as e:
             print(f"Could not load model: {e}")
@@ -47,7 +48,6 @@ class ModelVisualizer:
     
     def _get_model_observation(self):
         """Generate observation state for the model with correct dimensionality"""
-        # Initialize observation arrays with correct shapes
         observation = {
             "Cars_Entering": np.zeros((self.num_nodes, 2), dtype=np.float32),
             "Cars_Exiting": np.zeros((self.num_nodes, 2), dtype=np.float32),
@@ -58,7 +58,7 @@ class ModelVisualizer:
         
         # Generate observations for each node
         for i, node in enumerate(nodes):
-            # Light states (unchanged)
+            # Light states
             observation["Light_States"][i] = [float(node.lightud), float(not node.lightud)]
             
             # Calculate cars and speeds for vertical traffic (up/down)
@@ -123,36 +123,35 @@ class ModelVisualizer:
         
         # Flatten and concatenate all observation values
         flat_observation = np.concatenate([arr.flatten() for arr in observation.values()])
-        
-        # Debug print to verify observation changes
-        print(f"Observation shape: {flat_observation.shape}")
-        print(f"Non-zero elements: {np.count_nonzero(flat_observation)}")
-        
         return np.reshape(flat_observation, [1, -1])
     
     def update_traffic_lights(self):
+        global laststate
         if self.using_model:
             try:
                 observation = self._get_model_observation()
-                prediction = self.model.predict(observation, verbose=0)
-                print(prediction)
-                action = np.argmax(prediction[0])
+                predictions = self.model.predict(observation, verbose=0)
                 
                 # Debug prints
-                print(f"Model prediction shape: {prediction.shape}")
-                print(f"Selected action: {action}")
+                print(f"Model prediction shape: {predictions.shape}")
+                print(f"Predictions: {predictions[0]}")
                 
-                # Decode action (same as in training environment)
-                node_idx = action // 2
-                light_state = bool(action % 2)
+                # Update all nodes based on the model's output
+                # predictions should be a binary array of length num_nodes
+                now = [bool(b > 0.5) for b in predictions[0]]
+                print(now)
+                for q in range(min(len(laststate),len(now))):
+                    if laststate[q]!=now[q]:
+                        print(f"change at {q}")
+                print(now==laststate)
+                laststate=[*now]
                 
-                print(f"Updating node {node_idx} to state {light_state}")
+                for i, node in enumerate(nodes):
+                    if i < len(predictions[0]):
+                        # Convert prediction probability to boolean
+                        node.lightud = bool(predictions[0][i] > 0.5)
+                        #print(f"Node {i}: Setting light to {node.lightud}")
                 
-                # Update specific node's light
-                if 0 <= node_idx < len(nodes):
-                    nodes[node_idx].lightud = light_state
-                else:
-                    print(f"Invalid node index: {node_idx}")
             except Exception as e:
                 print(f"Error in model prediction: {e}")
                 self.using_model = False
