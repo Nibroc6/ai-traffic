@@ -12,6 +12,10 @@ running = True
 dt = 0
 
 
+#background image
+bgOriginal = pygame.image.load("grass.png")
+bg = pygame.transform.scale(bgOriginal, (160, 160))
+
 #make sum fuckin fcars
 for e in edges:
     length = e.length
@@ -37,7 +41,7 @@ else:
     node_rad = (screen.get_height() / mapsize[1])/10
 
 #road width
-road_width = 3
+road_width = 8
 
 #car width/height, I rly use these poorly so be warned if you try to use them
 carHeight = 10
@@ -46,6 +50,8 @@ carWidth = 5
 
 time_elapsed_since_last_action = 0
 while running:
+
+
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
     for event in pygame.event.get():
@@ -54,9 +60,15 @@ while running:
 
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("white")
+    #background image
+    # screen.blit(bg, (0, 0))
+    # screen.blit(bg, (bg.get_size()[0], 0))
 
+    s = max(screen.get_width(), screen.get_height())
+    for i in range(0, s//bg.get_size()[0] + 1):
+        for f in range(0, s//bg.get_size()[1] + 1):
+            screen.blit(bg, (i*bg.get_size()[0], f*bg.get_size()[1]))
 
-    
 
     #loop through nodes
     #put a cirlce at node position
@@ -117,7 +129,7 @@ while running:
                 pygame.draw.rect(screen, "blue", r)
             for c in e.carsN:
                 origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * b.x) + node_rad, ((screen.get_height() / mapsize[1]) * b.y) + node_rad)
-                r = pygame.Rect(origin_pos[0]-carWidth, origin_pos[1]-((screen.get_height() / mapsize[1])*c.position), carWidth, carHeight)
+                r = pygame.Rect(origin_pos[0]-carWidth-(.5*road_width), origin_pos[1]-((screen.get_height() / mapsize[1])*c.position), carWidth, carHeight)
                 pygame.draw.rect(screen, "green", r)
 
 
@@ -146,7 +158,7 @@ while running:
                 pygame.draw.rect(screen, "blue", r)
             for c in e.carsN:
                 origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * b.x) + node_rad, ((screen.get_height() / mapsize[1]) * b.y) + node_rad)
-                r = pygame.Rect(origin_pos[0]-((screen.get_width() / mapsize[1])*c.position), origin_pos[1]-carWidth, carHeight, carWidth)
+                r = pygame.Rect(origin_pos[0]-((screen.get_width() / mapsize[1])*c.position), origin_pos[1]-carWidth-(.5*road_width), carHeight, carWidth)
                 pygame.draw.rect(screen, "green", r)
 
 
@@ -178,7 +190,7 @@ while running:
                 pygame.draw.rect(screen, "blue", r)
             for c in e.carsN:
                 origin_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * b.x) + node_rad, ((screen.get_height() / mapsize[1]) * b.y) + node_rad)
-                r = pygame.Rect(origin_pos[0]-((screen.get_width() / mapsize[1])*c.position), origin_pos[1]-carWidth, carHeight, carWidth)
+                r = pygame.Rect(origin_pos[0]-((screen.get_width() / mapsize[1])*c.position), origin_pos[1]-carWidth-(.5*road_width), carHeight, carWidth)
                 pygame.draw.rect(screen, "green", r)
 
 
