@@ -14,18 +14,18 @@ bgOriginal = pygame.image.load("grass.png")
 bg = pygame.transform.scale(bgOriginal, (160, 160))
 
 # Create initial cars on edges
-for e in edges:
-    length = e.length
-    if random.randint(0, 1):
-        # Cars going in positive direction (nodeP to nodeN)
-        c = car(e.nodeP, e.nodeN)
-        c.position = random.uniform(0, length)
-        e.carsP.insert(0, c)
-        
-        # Cars going in negative direction (nodeN to nodeP)
-        c = car(e.nodeN, e.nodeP)
-        c.position = random.uniform(0, length)
-        e.carsN.insert(0, c)
+#for e in edges:
+#    length = e.length
+#    if random.randint(0, 1):
+#        # Cars going in positive direction (nodeP to nodeN)
+#        c = car(e.nodeP, e.nodeN)
+#        c.position = random.uniform(0, length)
+#        e.carsP.insert(0, c)
+#        
+#        # Cars going in negative direction (nodeN to nodeP)
+#        c = car(e.nodeN, e.nodeP)
+#        c.position = random.uniform(0, length)
+#        e.carsN.insert(0, c)
 
 # Node radius calculation
 if screen.get_width() >= screen.get_height():
@@ -128,8 +128,9 @@ while running:
                     else:
                         # Adjust positions for horizontal roads
                         car_rect = pygame.Rect(car_x, car_y + offset, carHeight, carWidth)
-
-                    pygame.draw.rect(screen, "blue", car_rect)
+                    #pygame.Color(random.randint(0, 255),random.randint(0, 255),random.randint(0, 255))
+                    
+                    pygame.draw.rect(screen, pygame.Color(c.Color), car_rect)
 
                 # Cars moving from nodeN to nodeP (negative direction)
                 for c in e.carsN:
@@ -144,7 +145,7 @@ while running:
                         # Adjust positions for horizontal roads
                         car_rect = pygame.Rect(car_x, car_y - carWidth - offset, carHeight, carWidth)
 
-                    pygame.draw.rect(screen, "green", car_rect)
+                    pygame.draw.rect(screen, pygame.Color(c.Color), car_rect)
 
     # Draw traffic lights at nodes
     for n in nodes:
@@ -160,7 +161,7 @@ while running:
 
     # Limit FPS
     dt = clock.tick(240) / 1000
-
+    #change the lights
     time_elapsed_since_last_action += dt
     if time_elapsed_since_last_action > 5:
         for n in nodes:
