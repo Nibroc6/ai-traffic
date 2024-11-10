@@ -4,6 +4,7 @@ edges = []
 nodes = []
 mutiplier = 5
 crashes = 0
+successes = 0
 tot_cars = [0]
 spawn_chance = 2
 
@@ -17,6 +18,9 @@ inverse_directions = {"u":"d","d":"u","l":"r","r":"l"}
 
 def get_crashes():
     return crashes
+
+def get_successes():
+    return successes
 
 def node_by_pos(x,y):
     for n in nodes:
@@ -51,6 +55,7 @@ def find_next_node(node, d):
     return False
         
 def transition(current_loc, car):
+    global successes
     if type(current_loc).__name__ == 'node':
         # Find the next node in the car's path
         try:
@@ -58,6 +63,7 @@ def transition(current_loc, car):
             if current_idx >= len(car.path) - 1:
                 # Path is complete, remove car
                 remove_item(current_loc.cars_in_intersection, car)
+                successes += 1
                 return
                 
             d_node = car.path[current_idx + 1]
@@ -233,7 +239,7 @@ class car():
     ticked = False
     path = None
     accel = .005/60
-    brake_accel = 100
+    brake_accel = .01/60
     time_in_intersection = 0
     
     def __init__(self, start, next_node=None):
@@ -302,7 +308,7 @@ class edge():
     def __init__(self, nodeP, nodeN): #carsp = cars going in positive direction; carsn = cars going in negative direction
         self.nodeP,self.nodeN=nodeP,nodeN
         self.carsP,self.carsN=[],[]
-        self.speed_limit = 0.2/60
+        self.speed_limit = .2/60
         self.get_length()
         self.ud = bool(abs(nodeP.y-nodeN.y))
     

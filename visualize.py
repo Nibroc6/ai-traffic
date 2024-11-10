@@ -43,7 +43,7 @@ carWidth = 5
 time_elapsed_since_last_action = 0
 
 
-#amount of crashes
+#amount of crashes/successes
 pygame.font.init()
 my_font = pygame.font.SysFont('Arial Rounded MT Bold', 70)
 #number of cars in node
@@ -58,8 +58,9 @@ while running:
             running = False
 
 
-    #update crashes
+    #update crashes/successes
     text_surface = my_font.render('crashes: ' + str(int(get_crashes()/2)), False, (11, 15, 106))
+    text_surface_s = my_font.render('successes: ' + str(get_successes()), False, (11, 15, 106))
 
 
     # Clear the screen
@@ -180,7 +181,8 @@ while running:
 
     #draw crashes text
     screen.blit(text_surface, (0,0))
-
+    screen.blit(text_surface_s, (0,50))
+    
     # Update the display
     pygame.display.flip()
 
@@ -188,7 +190,7 @@ while running:
     dt = clock.tick(240) / 1000
     #change the lights
     time_elapsed_since_last_action += dt
-    if time_elapsed_since_last_action > .5:
+    if time_elapsed_since_last_action > 3:
         for n in nodes:
             n.lightud = not n.lightud
         time_elapsed_since_last_action = 0
