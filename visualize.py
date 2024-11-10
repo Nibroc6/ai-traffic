@@ -51,7 +51,6 @@ carWidth = 5
 time_elapsed_since_last_action = 0
 while running:
 
-
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
     for event in pygame.event.get():
@@ -73,6 +72,7 @@ while running:
     #loop through nodes
     #put a cirlce at node position
     for n in nodes:
+        n.ctick()
         node_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * n.x) + node_rad, ((screen.get_height() / mapsize[1]) * n.y) + node_rad)
         #go through 4 edges and go to their nodes. draw a line from n to that node
         if(n.edges["u"]):
@@ -210,7 +210,7 @@ while running:
     # limits FPS to 60
     # dt is delta time in seconds since last frame, used for framerate-
     # independent physics.
-    dt = clock.tick(60) / 1000
+    dt = clock.tick(240) / 1000
 
     time_elapsed_since_last_action += dt
     if time_elapsed_since_last_action > 5:
