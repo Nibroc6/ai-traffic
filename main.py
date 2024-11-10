@@ -3,7 +3,7 @@ import random, pickle
 edges = []
 nodes = []
 cars = []
-
+mutiplier = 1
 crashes = 0
 
 with open(r"edges.obj", "wb") as node_file:
@@ -363,3 +363,9 @@ for n in nodes:
 
 
 [print(n) for n in path(nodes[0])]
+def tick_all():
+    for m in range(mutiplier):
+        for e in edges:
+            e.ctick()
+        for n in nodes: 
+            n.ctick()

@@ -50,7 +50,7 @@ carWidth = 5
 
 time_elapsed_since_last_action = 0
 while running:
-
+    tick_all()
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
     for event in pygame.event.get():
@@ -83,7 +83,6 @@ while running:
             e = n.edges["u"]
 
             #calling backend tick moving car shit
-            e.ctick()
 
 
             a = e.nodeP
@@ -120,7 +119,6 @@ while running:
             e = n.edges["d"]
 
             #calling backend tick moving car shit
-            e.ctick()
 
 
             a = e.nodeP
@@ -151,7 +149,6 @@ while running:
             e = n.edges["l"]
 
             #calling backend tick moving car shit
-            e.ctick()
 
 
             a = e.nodeP
@@ -188,7 +185,6 @@ while running:
 
 
             #calling backend tick moving car shit
-            e.ctick()
 
 
             a = e.nodeP
