@@ -3,9 +3,9 @@ import random, pickle
 edges = []
 nodes = []
 cars = []
-mutiplier = 1
+mutiplier = 100
 crashes = 0
-spawn_chance = 1000
+spawn_chance = 1
 
 with open(r"edges.obj", "wb") as node_file:
     pickle.dump(nodes, node_file)
@@ -13,7 +13,7 @@ with open(r"edges.obj", "wb") as node_file:
 with open(r"nodes.obj", "wb") as edge_file:
     pickle.dump(nodes, edge_file)
     
-mapsize = [10,10]
+mapsize = [20,20]
 car_breaking_range = (0.15,0.3)
 crash_dist = 0.01
 traffic_light_range = .4
