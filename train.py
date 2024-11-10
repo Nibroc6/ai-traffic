@@ -3,7 +3,23 @@ from traffic_env import TrafficControlEnv
 from traffic_agent import TrafficControlAgent
 import torch
 import torch.multiprocessing as mp
-
+"""
+def main_training():
+    # ... previous setup code ...
+    
+    # Create the agent with checkpoint directory
+    agent = TrafficControlAgent(env, checkpoint_dir='checkpoints')
+    
+    # To start fresh training with checkpoints every 50 episodes:
+    agent.train(num_episodes=1000, checkpoint_interval=50)
+    
+    # Or to resume training from a checkpoint:
+    agent.train(
+        num_episodes=1000,
+        checkpoint_interval=50,
+        resume_path='checkpoints/checkpoint_episode_200.pth'
+    )
+"""
 def main_training():
     # Set up CUDA for maximum performance
     if torch.cuda.is_available():
@@ -22,12 +38,12 @@ def main_training():
     env = TrafficControlEnv(main)
     
     # Create the agent with larger batch size
-    agent = TrafficControlAgent(env, batch_size=1024, memory_size=100000)
+    agent = TrafficControlAgent(env, batch_size=1024, memory_size=100000, checkpoint_dir='checkpoints')
     
     # Train the agent
     print("\nStarting training...")
     try:
-        agent.train(num_episodes=1000)
+        agent.train(num_episodes=1000, checkpoint_interval=50)
     except KeyboardInterrupt:
         print("\nTraining interrupted by user")
         agent.save("interrupted_model.pth")

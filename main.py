@@ -7,6 +7,7 @@ crashes = 0
 successes = 0
 tot_cars = [0]
 spawn_chance = 2
+MAX_CARS_IN_INTERSECTION = 1
 
     
 mapsize = [15,15]
@@ -370,7 +371,8 @@ def spawn_car():
     temp = random.choice(nodes)
     while not temp.is_corner() and not len(temp.cars_in_intersection) == 0:
         temp = random.choice(nodes)
-    temp.cars_in_intersection.append(car(temp))
+    if(len(temp.cars_in_intersection) < 1):
+        temp.cars_in_intersection.append(car(temp))
     
 #create nodes ---------------
 """
