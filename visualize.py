@@ -47,6 +47,24 @@ road_width = 15
 carHeight = 10
 carWidth = 5
 
+greys = []
+#mak sum fjuc grey squar brifge
+for i in range(0, mapsize[0]):
+    for f in range(0, mapsize[1]):
+        isNodeThere = False
+        for n in nodes:
+            if(n.x == i and n.y == f):
+                isNodeThere = True
+                break
+        if(not isNodeThere):
+            greys.append((i,f))
+
+for h in greys:
+    print("x: " + str(h[0]) + " y: " + str(h[1]))
+
+
+
+
 
 time_elapsed_since_last_action = 0
 while running:
