@@ -361,10 +361,24 @@ def spawn_car():
     temp.cars_in_intersection.append(car(temp))
     
 #create nodes ---------------
+"""
 for y in range(mapsize[0]):
+    tf_grid.append([])
     for x in range(mapsize[1]):
         if random.randint(0,1):
-            nodes.append(node([x,y]))
+            tf_grid[-1].append(True)
+            #nodes.append(node([x,y]))
+        else:
+            tf_grid[-1].append(False)
+"""
+with open('tf_grid.pkl', 'rb') as f:
+    tf_grid = pickle.load(f)
+
+for line in range(len(tf_grid)):
+    for point in range(len(tf_grid[line])):
+        if tf_grid[line][point]:
+            nodes.append(node([point,line]))
+            
 #print(nodes)
 #print(nodes[0].x,nodes[0].y,n:=next_node(nodes[0],"d"))
 #if n: print(n.x,n.y)
@@ -387,6 +401,7 @@ for n in range(len(nodes)):
     #print(node)
 for n in nodes: 
     n.lightud = bool(random.randint(0,1))
+
 
 
 [print(n) for n in c_path(nodes[0])]
