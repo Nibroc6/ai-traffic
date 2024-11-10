@@ -5,7 +5,7 @@ nodes = []
 mutiplier = 5
 crashes = 0
 tot_cars = [0]
-spawn_chance = 10
+spawn_chance = 5
 
 with open(r"edges.obj", "wb") as node_file:
     pickle.dump(nodes, node_file)
@@ -20,7 +20,8 @@ traffic_light_range = .4
 max_time_in_intersection = 10
 inverse_directions = {"u":"d","d":"u","l":"r","r":"l"}
 
-
+def get_crashes():
+    return crashes
 
 def node_by_pos(x,y):
     for n in nodes:

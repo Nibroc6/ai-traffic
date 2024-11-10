@@ -42,12 +42,23 @@ carWidth = 5
 
 time_elapsed_since_last_action = 0
 
+
+#amount of crashes
+pygame.font.init()
+my_font = pygame.font.SysFont('Arial Rounded MT Bold', 70)
+
+
 while running:
     tick_all()
     # Event handling
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+
+    #update crashes
+    text_surface = my_font.render('crashes: ' + str(int(get_crashes()/2)), False, (11, 15, 106))
+
 
     # Clear the screen
     screen.fill("white")
@@ -146,6 +157,7 @@ while running:
                         car_rect = pygame.Rect(car_x, car_y - carWidth - offset, carHeight, carWidth)
 
                     pygame.draw.rect(screen, pygame.Color(c.Color), car_rect)
+        
 
     # Draw traffic lights at nodes
     for n in nodes:
@@ -155,6 +167,10 @@ while running:
         )
         node_color = "green" if n.lightud else "red"
         pygame.draw.circle(screen, node_color, node_pos, node_rad)
+
+
+    #draw crashes text
+    screen.blit(text_surface, (0,0))
 
     # Update the display
     pygame.display.flip()
