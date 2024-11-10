@@ -9,11 +9,6 @@ spawn_chance = 3
 MAX_CARS_IN_INTERSECTION = 4  # New constant for intersection capacity
 
 
-with open(r"edges.obj", "wb") as node_file:
-    pickle.dump(nodes, node_file)
-
-with open(r"nodes.obj", "wb") as edge_file:
-    pickle.dump(nodes, edge_file)
     
 mapsize = [15,15]
 car_breaking_range = (0.15,0.3)
