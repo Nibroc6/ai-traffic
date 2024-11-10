@@ -7,11 +7,6 @@ crashes = 0
 tot_cars = [0]
 spawn_chance = 3
 
-with open(r"edges.obj", "wb") as node_file:
-    pickle.dump(nodes, node_file)
-
-with open(r"nodes.obj", "wb") as edge_file:
-    pickle.dump(nodes, edge_file)
     
 mapsize = [15,15]
 car_breaking_range = (0.15,0.3)
