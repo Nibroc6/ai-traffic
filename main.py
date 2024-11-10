@@ -5,6 +5,7 @@ nodes = []
 cars = []
 mutiplier = 1
 crashes = 0
+spawn_chance = 1000
 
 with open(r"edges.obj", "wb") as node_file:
     pickle.dump(nodes, node_file)
@@ -174,6 +175,9 @@ class node():
     def __str__(self):
         return str(self.edges)+"\n"+str(self.lightud)+"\n"+str(self.cars_in_intersection)+"\n"+str(f"({self.x},{self.y})")
     
+    def is_corner(self):
+        return mapsize[0] == self.x - 1 or 0 == self.x or mapsize[1] == self.y - 1 or 0 == self.y
+    
     def ctick(self):
         # Process cars in intersection
         i = 0
@@ -332,6 +336,13 @@ class edge():
                     transition(self, current_car)
                 i+=1    
 
+#spawn cars
+def spawn_car():
+    temp = random.choice(nodes)
+    while not temp.is_corner() and not len(temp.cars_in_intersection) == 0:
+        temp = random.choice(nodes)
+    temp.cars_in_intersection.append(car(temp))
+    print("i like sucking dick")
     
 #create nodes ---------------
 for y in range(mapsize[0]):
@@ -364,6 +375,8 @@ for n in nodes:
 
 [print(n) for n in path(nodes[0])]
 def tick_all():
+    if not random.randint(0, spawn_chance):
+        spawn_car()
     for m in range(mutiplier):
         for e in edges:
             e.ctick()
