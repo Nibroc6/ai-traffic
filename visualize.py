@@ -41,7 +41,7 @@ else:
     node_rad = (screen.get_height() / mapsize[1])/10
 
 #road width
-road_width = 9
+road_width = 15
 
 #car width/height, I rly use these poorly so be warned if you try to use them
 carHeight = 10
@@ -75,7 +75,7 @@ while running:
         n.ctick()
         node_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * n.x) + node_rad, ((screen.get_height() / mapsize[1]) * n.y) + node_rad)
         #yellow line offset
-        offset = int(road_width/5)
+        offset = int(road_width/8)
         #yellow line width
         yWidth = int(road_width/9)
         #go through 4 edges and go to their nodes. draw a line from n to that node
@@ -165,12 +165,12 @@ while running:
                 prev_node_pos = pygame.Vector2(((screen.get_width() / mapsize[0]) * b.x) + node_rad, ((screen.get_height() / mapsize[1]) * b.y) + node_rad)
                 pygame.draw.line(screen, "black", node_pos, prev_node_pos, width = road_width)
             #yellow line right side
-            lineStart = pygame.Vector2(prev_node_pos.x+offset, prev_node_pos.y)
-            lineEnd = pygame.Vector2(node_pos.x+offset, node_pos.y)
+            lineStart = pygame.Vector2(prev_node_pos.x, prev_node_pos.y+offset)
+            lineEnd = pygame.Vector2(node_pos.x, node_pos.y+offset)
             pygame.draw.line(screen, "yellow", lineStart, lineEnd, width = yWidth)
             #yellow line left side
-            lineStart = pygame.Vector2(prev_node_pos.x-offset, prev_node_pos.y)
-            lineEnd = pygame.Vector2(node_pos.x-offset, node_pos.y)
+            lineStart = pygame.Vector2(prev_node_pos.x, prev_node_pos.y-offset)
+            lineEnd = pygame.Vector2(node_pos.x, node_pos.y-offset)
             pygame.draw.line(screen, "yellow", lineStart, lineEnd, width = yWidth)
         #distance x
         #two lists of cars
