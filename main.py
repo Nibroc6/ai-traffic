@@ -7,6 +7,8 @@ crashes = 0
 tot_cars = [0]
 spawn_chance = 3
 
+goals_reached = 0
+
 with open(r"edges.obj", "wb") as node_file:
     pickle.dump(nodes, node_file)
 
@@ -22,6 +24,24 @@ inverse_directions = {"u":"d","d":"u","l":"r","r":"l"}
 
 def get_crashes():
     return crashes
+
+def get_goals_reached():
+    return goals_reached
+
+def set_crashes(value):
+    global crashes
+    # Ensure crash count cannot go below 0
+    if value < 0:
+        value = 0
+    crashes = value
+
+def set_goals_reached(value):
+    global goals_reached
+    # Ensure goals reached cannot be less than 0
+    if value < 0:
+        value = 0
+    goals_reached = value
+
 
 def node_by_pos(x,y):
     for n in nodes:
@@ -63,6 +83,8 @@ def transition(current_loc, car):
             if current_idx >= len(car.path) - 1:
                 # Path is complete, remove car
                 remove_item(current_loc.cars_in_intersection, car)
+                global goals_reached
+                goals_reached += 1
                 return
                 
             d_node = car.path[current_idx + 1]
@@ -271,19 +293,16 @@ class car():
     def crash(self,container):
         global crashes, tot_cars
         crashes += 1
-        print(f"Car {self} crashed ({crashes}/{tot_cars[0]} crashes so far)")
         try:    
             container.carsN.remove(self)
         except:
-            print("removal error1")
             try:
                 container.carsP.remove(self)
             except:
-                print("removal error2")
                 try:
                     container.cars_in_intersection.remove(self)
                 except:
-                    print("removal error3")
+                    pass
         del self
 
 class edge():
