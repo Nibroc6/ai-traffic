@@ -4,6 +4,12 @@ edges = []
 nodes = []
 cars = []
 
+with open(r"edges.obj", "wb") as node_file:
+    pickle.dump(nodes, node_file)
+
+with open(r"nodes.obj", "wb") as edge_file:
+    pickle.dump(nodes, edge_file)
+    
 mapsize = [10,10]
 car_breaking_range = (0.1,0.3)
 traffic_light_range = .4
