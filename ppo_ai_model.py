@@ -303,7 +303,7 @@ for episode in range(episodes):
     print(f"Epsilon: {agent.epsilon:.3f}")
     print(f"Memory size: {len(agent.memory)}")
     print("=" * 50)
-    model_filename = os.path.join(os.getcwd(), 'connor_model.keras')
+    model_filename = os.path.join(os.getcwd(), 'generic_model.keras')
     agent.model.save(model_filename)
     # Update target network periodically
     if episode % 10 == 0:
