@@ -198,9 +198,22 @@ while running:
             ((screen.get_width() / mapsize[0]) * n.x) + node_rad * 5,
             ((screen.get_height() / mapsize[1]) * n.y) + node_rad * 5
         )
-        pygame.draw.circle(screen, "green" if n.lightud else "red", node_pos, node_rad)
+        # node_color = "green" if n.lightud else "red"
+        # pygame.draw.circle(screen, node_color, node_pos, node_rad)
+        if(n.lightud):
+            virtColor = "green"
+            horColor = "red"
+        else:
+            virtColor = "red"
+            horColor = "green"
+        pygame.draw.polygon(screen, virtColor, ((node_pos.x-node_rad,node_pos.y),(node_pos.x,node_pos.y-2*node_rad),(node_pos.x+node_rad,node_pos.y)))
+        pygame.draw.polygon(screen, virtColor, ((node_pos.x+node_rad,node_pos.y),(node_pos.x,node_pos.y+2*node_rad),(node_pos.x-node_rad,node_pos.y)))
+        
+        pygame.draw.polygon(screen, horColor, ((node_pos.x-2*node_rad,node_pos.y),(node_pos.x,node_pos.y-node_rad),(node_pos.x,node_pos.y+node_rad)))
+        pygame.draw.polygon(screen, horColor, ((node_pos.x+2*node_rad,node_pos.y),(node_pos.x,node_pos.y+node_rad),(node_pos.x,node_pos.y-node_rad)))
+        #counter
         t_surface = node_font.render(str(len(n.cars_in_intersection)), False, (11, 15, 106))
-        screen.blit(t_surface, (node_pos.x-.5*node_rad, node_pos.y-1.5*node_rad))
+        screen.blit(t_surface, (node_pos.x-.5*node_rad,node_pos.y-1.5*node_rad))
 
     # Update FPS counter
     fps_counter += 1
