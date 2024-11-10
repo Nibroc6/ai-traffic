@@ -186,7 +186,7 @@ class node():
         self.cars_in_intersection = []
         self.edges={"u":None,"d":None,"l":None,"r":None}
         self.x,self.y=pos
-        self.lastTime = time.Time()
+        self.lastTime = time.time()
     def move_car(self):
         pass
         
@@ -197,7 +197,7 @@ class node():
         return mapsize[0] == self.x - 1 or 0 == self.x or mapsize[1] == self.y - 1 or 0 == self.y
     
     def secondPassed(self):
-        return self.lastTime-time.Time() > 1
+        return self.lastTime-time.time() > 1
 
     def ctick(self):
         # Process cars in intersection
