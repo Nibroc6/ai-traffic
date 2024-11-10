@@ -342,7 +342,6 @@ def spawn_car():
     while not temp.is_corner() and not len(temp.cars_in_intersection) == 0:
         temp = random.choice(nodes)
     temp.cars_in_intersection.append(car(temp))
-    print("i like sucking dick")
     
 #create nodes ---------------
 for y in range(mapsize[0]):
